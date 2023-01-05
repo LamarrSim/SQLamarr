@@ -10,7 +10,7 @@ namespace Lamarr
   // _string_field (internal helper function)
   //==========================================================================
   template <typename T>
-    std::string _string_field (T* s, int length)
+    std::string _string_field (T* s, int length, int column_type)
     {
       std::stringstream ret;
 
@@ -24,13 +24,20 @@ namespace Lamarr
         for (iCh = s_len; iCh < length; iCh++)
           ret << ' ';
       }
-      else
+      else if (column_type == SQLITE_TEXT)
       {
         for (iCh = 0; iCh < length/2 - 1; iCh++)
           ret << s[iCh];
         ret << "..";
         for (iCh = s_len - length/2 + 1; iCh < s_len; iCh++)
           ret << s[iCh];
+      }
+      else if (column_type == SQLITE_INTEGER || column_type == SQLITE_FLOAT)
+      {
+        char buf[1024];
+        sprintf(buf, "%g%100s", atof(reinterpret_cast<const char *>(s)), "");
+        buf[length+1] = '\0';
+        ret << buf;
       }
 
       return ret.str();
@@ -126,7 +133,7 @@ namespace Lamarr
           auto s = sqlite3_column_name (stmt, iCol);
           auto t = sqlite3_column_type (stmt, iCol);
           auto n = _get_field_length(t);
-          auto f = _string_field(s, n);
+          auto f = _string_field(s, n, SQLITE_TEXT);
           ret << f << SEPARATOR;
         }
         ret << std::endl;
@@ -147,7 +154,7 @@ namespace Lamarr
         }
         
         auto s = sqlite3_column_text (stmt, iCol);
-        auto f = _string_field(s, n);
+        auto f = _string_field(s, n, t);
         ret << f << SEPARATOR;
       }
       ret << std::endl;
