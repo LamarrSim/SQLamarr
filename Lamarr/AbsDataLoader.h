@@ -1,6 +1,5 @@
 // STL
 #include <string_view>
-#include <unordered_map>
 #include <memory>
 
 // HepMC3
@@ -9,13 +8,14 @@
 #include "HepMC3/ReaderAsciiHepMC2.h"
 
 #include "Lamarr/db_functions.h"
+#include "Lamarr/BaseSqlInterface.h"
 
 namespace Lamarr
 {
-  class AbsDataLoader
+  class AbsDataLoader: public BaseSqlInterface
   {
     public:
-      AbsDataLoader(SQLite3DB& db);
+      using BaseSqlInterface::BaseSqlInterface;
 
     protected: // insert functions
       void begin_transaction () { sqlite3_exec(m_database.get(), "BEGIN", 0, 0, 0); }
@@ -43,7 +43,8 @@ namespace Lamarr
           float t,
           float x, 
           float y,
-          float z
+          float z,
+          bool is_primary
           );
 
       int insert_particle (
@@ -58,22 +59,6 @@ namespace Lamarr
           float py,
           float pz,
           float m
-          );
-          
-
-
-
-    protected: // members
-      SQLite3DB& m_database;
-
-    private: //members
-      std::unordered_map<std::string, sqlite3_stmt*> m_queries;
-
-
-    protected: // methods
-      sqlite3_stmt* get_statement (
-          const std::string& name, 
-          const std::string_view query
           );
   };
 }

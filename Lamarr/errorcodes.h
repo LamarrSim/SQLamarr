@@ -1,1 +1,0 @@
-#define LAMARR_BAD_INDEX -0xBADBAD

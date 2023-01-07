@@ -4,19 +4,10 @@
 // Local
 #include "Lamarr/AbsDataLoader.h"
 #include "Lamarr/db_functions.h"
-#include "Lamarr/errorcodes.h"
+#include "Lamarr/preprocessor_symbols.h"
 
 namespace Lamarr
 {
-  //==========================================================================
-  // Constructor
-  //==========================================================================
-  AbsDataLoader::AbsDataLoader (SQLite3DB& db)
-    : m_database(db)
-  {
-    std::cout << "AbsDataLoader" << std::endl;
-  }
-
   //==========================================================================
   // insert_datasource
   //==========================================================================
@@ -81,12 +72,14 @@ namespace Lamarr
       float t,
       float x, 
       float y,
-      float z
+      float z,
+      bool is_primary
       )
   {
     sqlite3_stmt* stmt = get_statement ("insert_vertex",
-        "INSERT INTO GenVertices(genevent_id, hepmc_id, status, x, y, z, t) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?) "
+        "INSERT INTO GenVertices"
+        "  (genevent_id, hepmc_id, status, x, y, z, t, is_primary) "
+        "VALUES (?, ?, ?, ?,  ?, ?, ?, ?) "
         );
 
     sqlite3_bind_int(stmt, 1, genevent_id);
@@ -96,6 +89,7 @@ namespace Lamarr
     sqlite3_bind_double(stmt, 5, y);
     sqlite3_bind_double(stmt, 6, z);
     sqlite3_bind_double(stmt, 7, t);
+    sqlite3_bind_int(stmt, 8, int(is_primary));
 
     sqlite3_step(stmt);
 
@@ -154,22 +148,6 @@ namespace Lamarr
     sqlite3_step(stmt);
 
     return sqlite3_last_insert_rowid(m_database.get());
-  }
-
-
-  //==========================================================================
-  // get_statement
-  //==========================================================================
-  sqlite3_stmt* AbsDataLoader::get_statement (
-      const std::string& name, 
-      const std::string_view query
-      )
-  {
-    if (m_queries.find(name) == m_queries.end())
-      m_queries[name] = prepare_statement(m_database, query);
-
-    sqlite3_reset(m_queries[name]);
-    return m_queries[name];
   }
 }
 

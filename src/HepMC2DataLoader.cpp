@@ -1,10 +1,11 @@
 // STL
 #include <iostream>
+#include <algorithm>
 
 // Local
 #include "Lamarr/HepMC2DataLoader.h"
 #include "Lamarr/db_functions.h"
-#include "Lamarr/errorcodes.h"
+#include "Lamarr/preprocessor_symbols.h"
 
 namespace Lamarr
 {
@@ -36,6 +37,11 @@ namespace Lamarr
           pos.z()
           );
 
+      std::vector<int> pvs;
+      for (auto& bp: evt.beams())
+        if (bp->end_vertex())
+          pvs.push_back(bp->end_vertex()->id());
+
       std::unordered_map<int, int> vtxid_mapping;
       for (auto vertex: evt.vertices())
         vtxid_mapping[vertex->id()] = insert_vertex(
@@ -45,7 +51,8 @@ namespace Lamarr
               vertex->position().t(),
               vertex->position().x(),
               vertex->position().y(),
-              vertex->position().z()
+              vertex->position().z(),
+              (std::find(pvs.begin(), pvs.end(), vertex->id()) != pvs.end())
             );
 
       for (auto particle: evt.particles())

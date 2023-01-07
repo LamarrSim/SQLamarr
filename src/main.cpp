@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "Lamarr/HepMC2DataLoader.h"
+#include "Lamarr/PVFinder.h"
 #include "Lamarr/db_functions.h"
 #include <memory>
 #include <glob.h>
@@ -38,13 +39,17 @@ int main(int argc, char* argv[])
 
   // Define a data loader to take data from HepMC2-Ascii format
   Lamarr::HepMC2DataLoader loader (db);
-  
+
   // Loads the data to the database
   size_t evtNumber = 123;
   size_t runNumber = 456;
 
   for (std::string& file_path: file_paths)
     loader.load(file_path, runNumber, evtNumber++);
+
+  // Runs the PVFinder algorithm
+  Lamarr::PVFinder pvfinder(db, "", "");
+  pvfinder.execute();
 
   std::cout << Lamarr::dump_table(db, "SELECT COUNT(*) as n_files FROM DataSources") << std::endl;
   std::cout << Lamarr::dump_table(db, "SELECT * FROM DataSources LIMIT 10") << std::endl;

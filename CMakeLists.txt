@@ -13,9 +13,11 @@ project(Lamarr)
   include_directories(${LAMARR_INCLUDE_DIR})
 
   add_executable(Lamarr
+      src/db_functions.cpp
+      src/BaseSqlInterface.cpp
       src/AbsDataLoader.cpp
       src/HepMC2DataLoader.cpp
-      src/db_functions.cpp
+      src/PVFinder.cpp
       src/main.cpp
       )
 
