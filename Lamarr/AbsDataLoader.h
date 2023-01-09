@@ -18,9 +18,6 @@ namespace Lamarr
       using BaseSqlInterface::BaseSqlInterface;
 
     protected: // insert functions
-      void begin_transaction () { sqlite3_exec(m_database.get(), "BEGIN", 0, 0, 0); }
-      void end_transaction () { sqlite3_exec(m_database.get(), "END", 0, 0, 0); }
-
       int insert_datasource (
           std::string_view data_source,
           uint64_t run_number,

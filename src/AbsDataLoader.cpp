@@ -28,7 +28,7 @@ namespace Lamarr
 
     sqlite3_step(stmt);
 
-    return sqlite3_last_insert_rowid(m_database.get());
+    return last_insert_row();
   }
 
 
@@ -58,7 +58,7 @@ namespace Lamarr
 
     sqlite3_step(stmt);
 
-    return sqlite3_last_insert_rowid(m_database.get());
+    return last_insert_row();
   }
 
 
@@ -93,7 +93,7 @@ namespace Lamarr
 
     sqlite3_step(stmt);
 
-    return sqlite3_last_insert_rowid(m_database.get());
+    return last_insert_row();
   }
 
   //==========================================================================
@@ -130,7 +130,10 @@ namespace Lamarr
     if (production_vertex != LAMARR_BAD_INDEX)
       sqlite3_bind_int(stmt, iVar++, production_vertex);
     else
+    {
+      std::cout << "NULL production vertex " << std::endl; 
       sqlite3_bind_null(stmt, iVar++);
+    }
 
     if (end_vertex != LAMARR_BAD_INDEX)
       sqlite3_bind_int(stmt, iVar++, end_vertex);
@@ -147,7 +150,7 @@ namespace Lamarr
 
     sqlite3_step(stmt);
 
-    return sqlite3_last_insert_rowid(m_database.get());
+    return last_insert_row();
   }
 }
 

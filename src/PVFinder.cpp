@@ -4,14 +4,9 @@
 
 namespace Lamarr
 {
-  PVFinder::PVFinder (
-          SQLite3DB& db, 
-          std::string_view input_table, 
-          std::string_view output_table
-          )
+  PVFinder::PVFinder (SQLite3DB& db, int signal_status_code)
     : BaseSqlInterface(db)
-    , m_input_table(input_table)
-    , m_output_table(output_table)
+    , m_signal_status_code (signal_status_code)
   {}
 
   void PVFinder::execute(void) 
@@ -33,7 +28,7 @@ namespace Lamarr
           FIRST_VALUE(production_vertex) 
             OVER (PARTITION BY genevent_id ORDER BY hepmc_id ASC) AS root_vtx
         FROM GenParticles 
-        WHERE status==889
+        WHERE status==?
         GROUP BY genevent_id
       ),
       selected_vertices 
@@ -89,24 +84,46 @@ namespace Lamarr
         );
     )");
 
-    std::cout 
-      << "Imported PVs" << std::endl
-      << dump_table(m_database, "SELECT SUM(is_primary) AS nPV FROM GenVertices") 
-      << std::endl;
 
-    sqlite3_step(make_pv_from_signal);
+    sqlite3_stmt* import_pv = get_statement("import_pv", R"(
+      INSERT INTO MCVertices (
+        genvertex_id, genevent_id, 
+        status, is_primary, 
+        t, x, y, z 
+        )
+      SELECT 
+        genvertex_id, genevent_id, 
+        status, is_primary, t, x, y, z
+      FROM GenVertices
+      WHERE 
+        is_primary == TRUE
+      GROUP BY genevent_id
+      HAVING 
+        hepmc_id == MAX(hepmc_id);
+      )");
 
-    std::cout 
-      << "Imported PVs + PVs from signal" << std::endl
-      << dump_table(m_database, "SELECT SUM(is_primary) AS nPV FROM GenVertices") 
-      << std::endl;
 
-    sqlite3_step(make_pv_from_barcode);
+    sqlite3_stmt* count_missing_PVs = get_statement("count_missing_PVs", R"(
+        SELECT COUNT(genevent_id)
+        FROM GenVertices 
+        GROUP BY genevent_id
+        HAVING 
+          SUM(is_primary) = 0
+      )");
 
-    std::cout 
-      << "Imported PVs + PVs from signal + PVs from barcode" << std::endl
-      << dump_table(m_database, "SELECT SUM(is_primary) AS nPV FROM GenVertices") 
-      << std::endl;
+    sqlite3_step(count_missing_PVs);
+    if (sqlite3_column_int(count_missing_PVs, 0))
+    {
+      sqlite3_bind_int(make_pv_from_signal, 1, m_signal_status_code);
+      sqlite3_step(make_pv_from_signal);
+    }
+
+    sqlite3_reset(count_missing_PVs);
+
+    if (sqlite3_column_int(count_missing_PVs, 0))
+      sqlite3_step(make_pv_from_barcode);
+
+    sqlite3_step(import_pv);
 
   }
 }

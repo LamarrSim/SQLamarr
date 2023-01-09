@@ -11,19 +11,12 @@ namespace Lamarr
   class PVFinder: public BaseSqlInterface
   {
     public:
-      PVFinder (
-          SQLite3DB& db, 
-          std::string_view input_table, 
-          std::string_view output_table
-          );
+      PVFinder (SQLite3DB& db, int signal_status_code = 889);
 
       void execute();
 
-    private:  // members
-      std::string_view m_input_table, m_output_table;
-
-    private: // methods
-      int get_pv_as_beam_endvertex (int genevent_id);
+    private: // properties
+      int m_signal_status_code;
       
   };
 }

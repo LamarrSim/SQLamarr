@@ -5,6 +5,7 @@
 #include "Lamarr/HepMC2DataLoader.h"
 #include "Lamarr/PVFinder.h"
 #include "Lamarr/db_functions.h"
+#include "Lamarr/MCParticleSelector.h"
 #include <memory>
 #include <glob.h>
 
@@ -48,14 +49,34 @@ int main(int argc, char* argv[])
     loader.load(file_path, runNumber, evtNumber++);
 
   // Runs the PVFinder algorithm
-  Lamarr::PVFinder pvfinder(db, "", "");
+  Lamarr::PVFinder pvfinder(db);
   pvfinder.execute();
+
+  Lamarr::MCParticleSelector mcps(db);
+  mcps.execute();
 
   std::cout << Lamarr::dump_table(db, "SELECT COUNT(*) as n_files FROM DataSources") << std::endl;
   std::cout << Lamarr::dump_table(db, "SELECT * FROM DataSources LIMIT 10") << std::endl;
   std::cout << Lamarr::dump_table(db, "SELECT * FROM GenEvents LIMIT 10") << std::endl;
   std::cout << Lamarr::dump_table(db, "SELECT * FROM GenVertices LIMIT 10") << std::endl;
   std::cout << Lamarr::dump_table(db, "SELECT * FROM GenParticles LIMIT 10") << std::endl;
+  std::cout << Lamarr::dump_table(db, "SELECT * FROM GenParticles WHERE status =889 LIMIT 10") << std::endl;
+  std::cout << Lamarr::dump_table(db, "SELECT * FROM MCVertices LIMIT 10") << std::endl;
+  std::cout << Lamarr::dump_table(db, 
+      "SELECT * FROM MCParticles WHERE is_signal == TRUE LIMIT 10") << std::endl;
+  std::cout << Lamarr::dump_table(db, R"(
+    SELECT pid, COUNT(*) 
+    FROM GenParticles 
+    WHERE 
+      status == 889 
+      AND
+      production_vertex IS NOT NULL 
+      AND 
+      end_vertex IS NOT NULL 
+      AND 
+      production_vertex != end_vertex 
+    GROUP BY pid;
+    )");
 
   return 0;
 }

@@ -31,11 +31,6 @@ constexpr char SQL_CREATE_SCHEMA[] = R"(
           FOREIGN KEY(genevent_id) REFERENCES GenEvents(genevent_id)
         );
 
-        CREATE INDEX IF NOT EXISTS GenVertices_genvertex_id 
-          ON GenVertices (genvertex_id);
-        CREATE INDEX IF NOT EXISTS GenVertices_genevent_id 
-          ON GenVertices (genevent_id);
-
         CREATE TABLE IF NOT EXISTS GenParticles (
           genparticle_id INTEGER PRIMARY KEY AUTOINCREMENT,
           genevent_id INTEGER,
@@ -60,17 +55,36 @@ constexpr char SQL_CREATE_SCHEMA[] = R"(
         CREATE INDEX IF NOT EXISTS GenParticles_end_vertex 
           ON GenParticles (end_vertex);
 
-        CREATE TABLE IF NOT EXISTS Vertices (
-          vertex_id INTEGER PRIMARY KEY AUTOINCREMENT,
-          genvertex_id INTEGER,
+        CREATE TABLE IF NOT EXISTS MCVertices (
+          mcvertex_id INTEGER PRIMARY KEY AUTOINCREMENT,
+          genvertex_id INTEGER UNIQUE,
           genevent_id INTEGER,
-          hepmc_id INTEGER,
           status INTEGER,
           t REAL,
           x REAL,
           y REAL,
           z REAL,
+          is_primary INTEGER,
           FOREIGN KEY(genvertex_id) REFERENCES GenVertices(genvertex_id),
           FOREIGN KEY(genevent_id) REFERENCES GenEvents(genevent_id)
+          );
+
+        CREATE TABLE IF NOT EXISTS MCParticles (
+          mcparticle_id INTEGER PRIMARY KEY AUTOINCREMENT,
+          genparticle_id INTEGER UNIQUE,
+          genevent_id INTEGER,
+          production_vertex INTEGER,
+          end_vertex INTEGER,
+          pid INTEGER,
+          pe REAL,
+          px REAL,
+          py REAL,
+          pz REAL,
+          m REAL,
+          is_signal INTEGER,
+          FOREIGN KEY(genparticle_id) REFERENCES GenParticles(genparticle_id),
+          FOREIGN KEY(production_vertex) REFERENCES MCVertices(mcvertex_id),
+          FOREIGN KEY(genevent_id) REFERENCES GenEvents(genevent_id),
+          FOREIGN KEY(end_vertex) REFERENCES MCVertices(mcvertex_id)
           );
 )";
