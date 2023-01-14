@@ -1,4 +1,6 @@
+#pragma once
 #include <memory>
+#include <string_view>
 #include "sqlite3.h"
 
 namespace Lamarr
