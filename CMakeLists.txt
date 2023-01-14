@@ -18,6 +18,7 @@ project(Lamarr)
       src/AbsDataLoader.cpp
       src/HepMC2DataLoader.cpp
       src/PVFinder.cpp
+      src/PVReconstruction.cpp
       src/MCParticleSelector.cpp
       src/main.cpp
       )
