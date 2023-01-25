@@ -2,16 +2,16 @@
 #include <iostream>
 
 // Local
-#include "Lamarr/AbsDataLoader.h"
-#include "Lamarr/db_functions.h"
-#include "Lamarr/preprocessor_symbols.h"
+#include "SQLamarr/AbsDataLoader.h"
+#include "SQLamarr/db_functions.h"
+#include "SQLamarr/preprocessor_symbols.h"
 
-namespace Lamarr
+namespace SQLamarr
 {
   //==========================================================================
-  // insert_datasource
+  // insert_event
   //==========================================================================
-  int AbsDataLoader::insert_datasource (
+  int AbsDataLoader::insert_event (
       std::string_view datasource,
       uint64_t run_number,
       uint64_t evt_number
@@ -35,7 +35,7 @@ namespace Lamarr
   //==========================================================================
   // insert_event
   //==========================================================================
-  int AbsDataLoader::insert_event (
+  int AbsDataLoader::insert_collision (
       int datasource_id,
       int collision,
       float t,

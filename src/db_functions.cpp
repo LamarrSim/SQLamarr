@@ -1,10 +1,10 @@
-#include "Lamarr/db_functions.h"
+#include "SQLamarr/db_functions.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
 #include "schema.sql"
 
-namespace Lamarr
+namespace SQLamarr
 {
   //==========================================================================
   // _string_field (internal helper function)

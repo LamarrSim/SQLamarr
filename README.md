@@ -1,5 +1,5 @@
 # SQLamarr
-### *The stand-alone ultra-fast simulation option for LHCb*
+### The stand-alone ultra-fast simulation option for LHCb
 
 The detailed simulation of the hadron collisions at the LHC, and of the 
 interaction of the generated particles with the detector material
@@ -64,7 +64,7 @@ with sqlite3.connect("SomeInput.db") as conn:
  * [HepMC3](http://hepmc.web.cern.ch/hepmc/) as a standard interface
   to event generators.
 
-## How to use `SQLamarr`
+## How to use SQLamarr
 The project is not mature enough to provide a good user experience.
 For the time being, clone the repository and compile the package with CMake, 
 then edit the file `src/main.cpp` to

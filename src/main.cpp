@@ -2,10 +2,10 @@
 #include <unordered_map>
 #include <vector>
 #include <iostream>
-#include "Lamarr/HepMC2DataLoader.h"
-#include "Lamarr/PVFinder.h"
-#include "Lamarr/db_functions.h"
-#include "Lamarr/MCParticleSelector.h"
+#include "SQLamarr/HepMC2DataLoader.h"
+#include "SQLamarr/PVFinder.h"
+#include "SQLamarr/db_functions.h"
+#include "SQLamarr/MCParticleSelector.h"
 #include <memory>
 #include <glob.h>
 
@@ -21,7 +21,8 @@ std::vector<std::string> globVector(const std::string& pattern);
 
 int main(int argc, char* argv[])
 {
-  std::string path{"/home/lucio/test-data/DSt_Pi.hepmc2/*.mc2"};
+  std::string path{"/home/lucio/Documents/SQLamarr"
+    "/temporary_data/hepmc/LHCb_DSt_Pi/*.mc2"};
 
 
   std::vector<std::string> file_paths = globVector(path); 
@@ -35,11 +36,11 @@ int main(int argc, char* argv[])
 //  };
 //
   // Create the in-memory database
-  Lamarr::SQLite3DB db = Lamarr::make_database(argc > 1 ? argv[1] : ":memory:" );
+  SQLamarr::SQLite3DB db = SQLamarr::make_database(argc > 1 ? argv[1] : ":memory:" );
 
 
   // Define a data loader to take data from HepMC2-Ascii format
-  Lamarr::HepMC2DataLoader loader (db);
+  SQLamarr::HepMC2DataLoader loader (db);
 
   // Loads the data to the database
   size_t evtNumber = 123;
@@ -49,22 +50,22 @@ int main(int argc, char* argv[])
     loader.load(file_path, runNumber, evtNumber++);
 
   // Runs the PVFinder algorithm
-  Lamarr::PVFinder pvfinder(db);
+  SQLamarr::PVFinder pvfinder(db);
   pvfinder.execute();
 
-  Lamarr::MCParticleSelector mcps(db);
+  SQLamarr::MCParticleSelector mcps(db);
   mcps.execute();
 
-  std::cout << Lamarr::dump_table(db, "SELECT COUNT(*) as n_files FROM DataSources") << std::endl;
-  std::cout << Lamarr::dump_table(db, "SELECT * FROM DataSources LIMIT 10") << std::endl;
-  std::cout << Lamarr::dump_table(db, "SELECT * FROM GenEvents LIMIT 10") << std::endl;
-  std::cout << Lamarr::dump_table(db, "SELECT * FROM GenVertices LIMIT 10") << std::endl;
-  std::cout << Lamarr::dump_table(db, "SELECT * FROM GenParticles LIMIT 10") << std::endl;
-  std::cout << Lamarr::dump_table(db, "SELECT * FROM GenParticles WHERE status =889 LIMIT 10") << std::endl;
-  std::cout << Lamarr::dump_table(db, "SELECT * FROM MCVertices LIMIT 10") << std::endl;
-  std::cout << Lamarr::dump_table(db, 
+  std::cout << SQLamarr::dump_table(db, "SELECT COUNT(*) as n_files FROM DataSources") << std::endl;
+  std::cout << SQLamarr::dump_table(db, "SELECT * FROM DataSources LIMIT 10") << std::endl;
+  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenEvents LIMIT 10") << std::endl;
+  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenVertices LIMIT 10") << std::endl;
+  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenParticles LIMIT 10") << std::endl;
+  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenParticles WHERE status =889 LIMIT 10") << std::endl;
+  std::cout << SQLamarr::dump_table(db, "SELECT * FROM MCVertices LIMIT 10") << std::endl;
+  std::cout << SQLamarr::dump_table(db, 
       "SELECT * FROM MCParticles WHERE is_signal == TRUE LIMIT 10") << std::endl;
-  std::cout << Lamarr::dump_table(db, R"(
+  std::cout << SQLamarr::dump_table(db, R"(
     SELECT pid, COUNT(*) 
     FROM GenParticles 
     WHERE 

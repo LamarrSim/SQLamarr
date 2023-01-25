@@ -1,6 +1,6 @@
-#include "Lamarr/BaseSqlInterface.h"
+#include "SQLamarr/BaseSqlInterface.h"
 
-namespace Lamarr
+namespace SQLamarr
 {
   BaseSqlInterface::BaseSqlInterface(SQLite3DB& db)
   : m_database (db)

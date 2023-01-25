@@ -1,9 +1,9 @@
-#include "Lamarr/PVReconstruction.h"
+#include "SQLamarr/PVReconstruction.h"
 #include "sqlite3.h"
 
 #include <iostream>
 
-namespace Lamarr 
+namespace SQLamarr 
 {
   // Internal helper function
   PVReconstruction::SmearingParametrization_1D _get_param_line (

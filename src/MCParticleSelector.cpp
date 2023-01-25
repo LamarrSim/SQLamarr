@@ -1,9 +1,12 @@
-#include "Lamarr/MCParticleSelector.h"
+#include "SQLamarr/MCParticleSelector.h"
 #include <iostream>
 #include <algorithm>
 
-namespace Lamarr
+namespace SQLamarr
 {
+  //============================================================================
+  // Constructor
+  //============================================================================
   MCParticleSelector::MCParticleSelector(
       SQLite3DB& db,
       const std::vector<uint64_t> retained_status_values,
@@ -14,6 +17,9 @@ namespace Lamarr
     , m_retained_abspid_values(retained_abspid_values)
   {}
 
+  //============================================================================
+  // execute
+  //============================================================================
   void MCParticleSelector::execute()
   {
     sqlite3_stmt* get_root = get_statement("get_root", R"(
@@ -25,15 +31,23 @@ namespace Lamarr
         )");
 
     begin_transaction();
-    while (sqlite3_step(get_root) == SQLITE_ROW)
-      process_particle (
+    bool traversal_status = true;
+
+    while (traversal_status && sqlite3_step(get_root) == SQLITE_ROW)
+      traversal_status &= process_particle (
           sqlite3_column_int(get_root, 0),
           sqlite3_column_int(get_root, 1)
           );
 
     end_transaction();
+
+    if (!traversal_status)
+      throw std::logic_error("Graph traversal failed.");
   }
 
+  //============================================================================
+  // process_particle
+  //============================================================================
   bool MCParticleSelector::process_particle(int genparticle_id, int prod_vtx)
   {
     sqlite3_stmt* get_particle = get_statement("get_particle", R"(
@@ -78,8 +92,9 @@ namespace Lamarr
     while (valid_end && sqlite3_step(get_daughters) == SQLITE_ROW)
       daughter_ids.push_back (sqlite3_column_int(get_daughters, 0));
 
+    bool traversal_status = true;
     for (uint64_t daughter_id: daughter_ids)
-      process_particle (daughter_id, end_vtx);
+      traversal_status &= process_particle (daughter_id, end_vtx);
 
     if (valid_prod && kept) // && prod_vtx != end_vtx)
     {
@@ -122,9 +137,12 @@ namespace Lamarr
       sqlite3_step(set_mc_vertices);
     }
 
-    return true;
+    return traversal_status;
   }
 
+  //============================================================================
+  // keep
+  //============================================================================
   bool MCParticleSelector::keep(int status, int abspid) const
   {
     const auto& s_ok = m_retained_status_values;
@@ -144,6 +162,9 @@ namespace Lamarr
     return false;
   }
 
+  //============================================================================
+  // get_or_create_end_vertex
+  //============================================================================
   uint64_t MCParticleSelector::get_or_create_end_vertex (int genparticle_id)
   {
     /** Insert vertex **/

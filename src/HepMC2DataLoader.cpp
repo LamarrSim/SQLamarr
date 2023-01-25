@@ -3,11 +3,11 @@
 #include <algorithm>
 
 // Local
-#include "Lamarr/HepMC2DataLoader.h"
-#include "Lamarr/db_functions.h"
-#include "Lamarr/preprocessor_symbols.h"
+#include "SQLamarr/HepMC2DataLoader.h"
+#include "SQLamarr/db_functions.h"
+#include "SQLamarr/preprocessor_symbols.h"
 
-namespace Lamarr
+namespace SQLamarr
 {
   //==========================================================================
   // load
@@ -19,7 +19,7 @@ namespace Lamarr
       )
   {
     begin_transaction();
-    const int ds_id = insert_datasource(file_path, run_number, evt_number);
+    const int ds_id = insert_event(file_path, run_number, evt_number);
 
     HepMC3::ReaderAsciiHepMC2 reader(file_path.data());
     while ( !reader.failed() ) 
@@ -28,7 +28,7 @@ namespace Lamarr
       reader.read_event(evt);
 
       auto pos = evt.event_pos();
-      const int event_id = insert_event(
+      const int event_id = insert_collision(
           ds_id,
           evt.event_number(),
           pos.t(),

@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
-project(Lamarr)
+project(SQLamarr)
 
   set(CMAKE_CXX_STANDARD 17)
-  find_package(HepMC3 3.2.5 REQUIRED PATHS /home/lucio/hepmc3/hepmc3-install)
+  find_package(HepMC3 REQUIRED PATHS /home/lucio/hepmc3/hepmc3-install)
   set(SQLite3_LIBRARIES /usr/lib/x86_64-linux-gnu/libsqlite3.so)
   set(SQLite3_INCLUDE_DIRS /usr/include)
 
@@ -12,7 +12,7 @@ project(Lamarr)
   include_directories(${SQLite_INCLUDE_DIRS})
   include_directories(${LAMARR_INCLUDE_DIR})
 
-  add_executable(Lamarr
+  add_executable(SQLamarr
       src/db_functions.cpp
       src/BaseSqlInterface.cpp
       src/AbsDataLoader.cpp
@@ -23,4 +23,10 @@ project(Lamarr)
       src/main.cpp
       )
 
-  target_link_libraries(Lamarr ${HEPMC3_LIB} ${SQLite3_LIBRARIES})
+  target_link_libraries(SQLamarr ${HEPMC3_LIB} ${SQLite3_LIBRARIES})
+
+
+  add_custom_target (docs ALL 
+      COMMAND doxygen 
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      )

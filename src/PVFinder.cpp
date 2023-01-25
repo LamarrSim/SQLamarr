@@ -1,8 +1,8 @@
-#include "Lamarr/PVFinder.h"
-#include "Lamarr/preprocessor_symbols.h"
+#include "SQLamarr/PVFinder.h"
+#include "SQLamarr/preprocessor_symbols.h"
 #include <iostream>
 
-namespace Lamarr
+namespace SQLamarr
 {
   PVFinder::PVFinder (SQLite3DB& db, int signal_status_code)
     : BaseSqlInterface(db)
