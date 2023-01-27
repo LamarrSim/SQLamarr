@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.1)
 project(SQLamarr)
 
+  set(PREFIX_PATH $ENV{CONDA_PREFIX})
   set(CMAKE_CXX_STANDARD 17)
-  find_package(HepMC3 REQUIRED PATHS /home/lucio/hepmc3/hepmc3-install)
-  set(SQLite3_LIBRARIES /usr/lib/x86_64-linux-gnu/libsqlite3.so)
-  set(SQLite3_INCLUDE_DIRS /usr/include)
+
+  set(HEPMC3_LIB ${PREFIX_PATH}/lib/libHepMC3.so)
+  set(HEPMC3_INCLUDE_DIR ${PREFIX_PATH}/include)
+  set(SQLite3_LIBRARIES ${PREFIX_PATH}/lib/libsqlite3.so)
+  set(SQLite3_INCLUDE_DIRS ${PREFIX_PATH}/include)
 
   set(LAMARR_INCLUDE_DIR ${PROJECT_SOURCE_DIR}) 
 
@@ -30,3 +33,4 @@ project(SQLamarr)
       COMMAND doxygen 
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       )
+

@@ -64,6 +64,28 @@ with sqlite3.connect("SomeInput.db") as conn:
  * [HepMC3](http://hepmc.web.cern.ch/hepmc/) as a standard interface
   to event generators.
 
+## Build from source
+Make sure you have conda (or similar) installed, if not 
+get [miniconda3](https://docs.conda.io/en/latest/miniconda.html).
+Create and activate a dedicated conda environment, say `sqlamarr`:
+```
+conda create -y -n sqlamarr -c conda-forge python=3.10 gxx gxx_linux-64 hepmc3
+conda activate sqlamarr
+```
+
+Create a out-of-source directory:
+```
+mkdir build
+cd build
+```
+
+Configure and build
+```
+cmake .. 
+cmake --build .
+```
+
+
 ## How to use SQLamarr
 The project is not mature enough to provide a good user experience.
 For the time being, clone the repository and compile the package with CMake, 
