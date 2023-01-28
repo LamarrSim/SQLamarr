@@ -52,5 +52,18 @@ namespace SQLamarr
 
       /// Return the index of the last rows inserted in any table
       int last_insert_row () { return sqlite3_last_insert_rowid(m_database.get()); }
+
+      /// Register a static function in DB, enabling usage from SQL.
+      /// 
+      /// Function prototype should be:
+      /// ```
+      /// void (sqlite3_context* context, int argc, sqlite3_value** argv);
+      /// ```
+      void using_sql_function (
+          const std::string& name,  ///< Name of the SQL function
+          int argc,                 ///< Max. number of arguments
+          void (*xFunc)(sqlite3_context*, int, sqlite3_value**) 
+                                    ///< Function pointer
+          );
   };
 }
