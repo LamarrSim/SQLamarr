@@ -53,7 +53,8 @@ SQLite3, writing the reconstructed (or intermediate) quantities in the
 form of SQLite3 databases. 
 Note that converting an SQLite3 table to a ROOT nTuple requires no more 
 than 3 lines of Python:
-```
+
+```python
 import sqlite3, uproot, pandas
 with sqlite3.connect("SomeInput.db") as conn:
   uproot.open("SomeFile.root", "RECREATE")["myTree"] = pandas.read_sql_table("myTable", conn)
@@ -63,6 +64,28 @@ with sqlite3.connect("SomeInput.db") as conn:
  * [SQLite3](https://www.sqlite.org/index.html) with C/C++ headers
  * [HepMC3](http://hepmc.web.cern.ch/hepmc/) as a standard interface
   to event generators.
+
+## Build from source
+Make sure you have conda (or similar) installed, if not 
+get [miniconda3](https://docs.conda.io/en/latest/miniconda.html).
+Create and activate a dedicated conda environment, say `sqlamarr`:
+```bash
+conda create -y -n sqlamarr -c conda-forge python=3.10 gxx gxx_linux-64 hepmc3 doxygen
+conda activate sqlamarr
+```
+
+Create a out-of-source directory:
+```bash
+mkdir build
+cd build
+```
+
+Configure and build
+```bash
+cmake .. 
+cmake --build .
+```
+
 
 ## How to use SQLamarr
 The project is not mature enough to provide a good user experience.
