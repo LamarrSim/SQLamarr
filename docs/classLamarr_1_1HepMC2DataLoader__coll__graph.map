@@ -1,5 +1,0 @@
-<map id="Lamarr::HepMC2DataLoader" name="Lamarr::HepMC2DataLoader">
-<area shape="rect" id="node1" title=" " alt="" coords="5,155,212,181"/>
-<area shape="rect" id="node2" href="$classLamarr_1_1AbsDataLoader.html" title="Abstract Interface for loading data to the internal daabase." alt="" coords="21,80,196,107"/>
-<area shape="rect" id="node3" href="$classLamarr_1_1BaseSqlInterface.html" title=" " alt="" coords="15,5,202,32"/>
-</map>
