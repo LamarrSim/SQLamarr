@@ -37,7 +37,7 @@ namespace SQLamarr
   as arguments.
 
   For example,
-  ```
+  ```cpp
   std::vector<std::string> input_files = {"my_event_1.mc2", "my_event_2.mc2"};
   SQLite3DB db = make_database(":memory:");
   HepMC2DataLoader loader (db);
@@ -48,6 +48,7 @@ namespace SQLamarr
   for (auto input_file: input_files)
     loader.load(file_path, runNumber, evtNumber++);
   ```
+
   */
   class HepMC2DataLoader: public AbsDataLoader
   {
