@@ -6,6 +6,7 @@
 #include "SQLamarr/PVFinder.h"
 #include "SQLamarr/db_functions.h"
 #include "SQLamarr/MCParticleSelector.h"
+#include "SQLamarr/PVReconstruction.h"
 #include <memory>
 #include <glob.h>
 
@@ -43,11 +44,12 @@ int main(int argc, char* argv[])
   SQLamarr::HepMC2DataLoader loader (db);
 
   // Loads the data to the database
-  size_t evtNumber = 123;
+  size_t evtNumber = 0;
   size_t runNumber = 456;
 
   for (std::string& file_path: file_paths)
-    loader.load(file_path, runNumber, evtNumber++);
+    if (evtNumber < 1000) 
+      loader.load(file_path, runNumber, evtNumber++);
 
   // Runs the PVFinder algorithm
   SQLamarr::PVFinder pvfinder(db);
@@ -55,6 +57,13 @@ int main(int argc, char* argv[])
 
   SQLamarr::MCParticleSelector mcps(db);
   mcps.execute();
+
+  SQLamarr::PVReconstruction pv_reco(db,
+      SQLamarr::PVReconstruction::load_parametrization(
+        "/home/lucio/Documents/SQLamarr/temporary_data/PrimaryVertex/PrimaryVertexSmearing.db",
+        "PVSmearing", "2016_pp_MagUp")
+      );
+  pv_reco.execute();
 
   std::cout << SQLamarr::dump_table(db, "SELECT COUNT(*) as n_files FROM DataSources") << std::endl;
   std::cout << SQLamarr::dump_table(db, "SELECT * FROM DataSources LIMIT 10") << std::endl;
@@ -78,6 +87,8 @@ int main(int argc, char* argv[])
       production_vertex != end_vertex 
     GROUP BY pid;
     )");
+
+  std::cout << SQLamarr::dump_table(db, "SELECT * FROM Vertices LIMIT 10") << std::endl;
 
   return 0;
 }

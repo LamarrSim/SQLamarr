@@ -2,9 +2,9 @@
 #define LAMARR_BAD_INDEX -0xBADBAD
 
 // VERTEX TYPE
-#define PRIMARY     1
-#define FROM_DECAY  2
-#define UNKNOWN    -1
+#define LAMARR_VERTEX_PRIMARY     1
+#define LAMARR_VERTEX_FROM_DECAY  2
+#define LAMARR_VERTEX_UNKNOWN    -1
 
 
 

@@ -22,4 +22,20 @@ namespace SQLamarr
     return m_queries[name];
   }
 
+  //==========================================================================
+  // create_sql_function
+  //==========================================================================
+  void BaseSqlInterface::using_sql_function (
+      const std::string& name,
+      int argc,
+      void (*xFunc)(sqlite3_context*, int, sqlite3_value**) 
+      )
+  {
+    sqlite3_create_function(
+        m_database.get(), 
+        name.c_str(), argc,
+        SQLITE_UTF8, nullptr, xFunc, nullptr, nullptr
+        );
+  }
+
 }

@@ -92,14 +92,19 @@ namespace SQLamarr
         t, x, y, z 
         )
       SELECT 
-        genvertex_id, genevent_id, 
-        status, is_primary, t, x, y, z
-      FROM GenVertices
+        v.genvertex_id, v.genevent_id, 
+        v.status, v.is_primary, 
+        v.t + e.t, 
+        v.x + e.x, 
+        v.y + e.y, 
+        v.z + e.z 
+      FROM GenVertices AS v
+      INNER JOIN GenEvents AS e ON e.genevent_id = v.genevent_id
       WHERE 
-        is_primary == TRUE
-      GROUP BY genevent_id
+        v.is_primary == TRUE
+      GROUP BY v.genevent_id
       HAVING 
-        hepmc_id == MAX(hepmc_id);
+        v.hepmc_id == MAX(v.hepmc_id);
       )");
 
 

@@ -89,4 +89,17 @@ constexpr char SQL_CREATE_SCHEMA[] = R"(
           FOREIGN KEY(genevent_id) REFERENCES GenEvents(genevent_id),
           FOREIGN KEY(end_vertex) REFERENCES MCVertices(mcvertex_id)
           );
+
+      CREATE TABLE IF NOT EXISTS Vertices (
+          vertex_id INTEGER PRIMARY KEY AUTOINCREMENT,
+          mcvertex_id INTEGER UNIQUE,
+          genevent_id INTEGER,
+          t REAL,
+          x REAL,
+          y REAL,
+          z REAL,
+          vertex_type INTEGER,
+          FOREIGN KEY(mcvertex_id) REFERENCES MCVertices(mcvertex_id),
+          FOREIGN KEY(genevent_id) REFERENCES GenEvents(genevent_id)
+          );
 )";
