@@ -53,7 +53,8 @@ SQLite3, writing the reconstructed (or intermediate) quantities in the
 form of SQLite3 databases. 
 Note that converting an SQLite3 table to a ROOT nTuple requires no more 
 than 3 lines of Python:
-```
+
+```python
 import sqlite3, uproot, pandas
 with sqlite3.connect("SomeInput.db") as conn:
   uproot.open("SomeFile.root", "RECREATE")["myTree"] = pandas.read_sql_table("myTable", conn)
@@ -68,19 +69,19 @@ with sqlite3.connect("SomeInput.db") as conn:
 Make sure you have conda (or similar) installed, if not 
 get [miniconda3](https://docs.conda.io/en/latest/miniconda.html).
 Create and activate a dedicated conda environment, say `sqlamarr`:
-```
-conda create -y -n sqlamarr -c conda-forge python=3.10 gxx gxx_linux-64 hepmc3
+```bash
+conda create -y -n sqlamarr -c conda-forge python=3.10 gxx gxx_linux-64 hepmc3 doxygen
 conda activate sqlamarr
 ```
 
 Create a out-of-source directory:
-```
+```bash
 mkdir build
 cd build
 ```
 
 Configure and build
-```
+```bash
 cmake .. 
 cmake --build .
 ```
