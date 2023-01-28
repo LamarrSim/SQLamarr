@@ -1,8 +1,0 @@
-<map id="Lamarr::BaseSqlInterface" name="Lamarr::BaseSqlInterface">
-<area shape="rect" id="node1" title="Abstract interface with helper functions to access an SQLite DB." alt="" coords="5,81,192,108"/>
-<area shape="rect" id="node2" href="$classLamarr_1_1AbsDataLoader.html" title="Abstract Interface for loading data to the internal database." alt="" coords="252,5,427,32"/>
-<area shape="rect" id="node4" href="$classLamarr_1_1MCParticleSelector.html" title=" " alt="" coords="240,56,439,83"/>
-<area shape="rect" id="node5" href="$classLamarr_1_1PVFinder.html" title=" " alt="" coords="273,107,406,133"/>
-<area shape="rect" id="node6" href="$classLamarr_1_1PVReconstruction.html" title=" " alt="" coords="244,157,435,184"/>
-<area shape="rect" id="node3" href="$classLamarr_1_1HepMC2DataLoader.html" title="AbsDataLoader implementation for Ascii HepMC2 data." alt="" coords="487,5,693,32"/>
-</map>

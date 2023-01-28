@@ -1,8 +1,0 @@
-<map id="SQLamarr::BaseSqlInterface" name="SQLamarr::BaseSqlInterface">
-<area shape="rect" id="node1" title="Abstract interface with helper functions to access an SQLite DB." alt="" coords="5,81,209,108"/>
-<area shape="rect" id="node2" href="$classSQLamarr_1_1AbsDataLoader.html" title="Abstract Interface for loading data to the internal database." alt="" coords="269,5,462,32"/>
-<area shape="rect" id="node4" href="$classSQLamarr_1_1MCParticleSelector.html" title="Converts GenParticles to MCParticles." alt="" coords="257,56,473,83"/>
-<area shape="rect" id="node5" href="$classSQLamarr_1_1PVFinder.html" title="Identifies the primary vertices." alt="" coords="290,107,441,133"/>
-<area shape="rect" id="node6" href="$classSQLamarr_1_1PVReconstruction.html" title="Emulates the reconstruction of the primary vertex." alt="" coords="261,157,469,184"/>
-<area shape="rect" id="node3" href="$classSQLamarr_1_1HepMC2DataLoader.html" title="AbsDataLoader implementation for Ascii HepMC2 data." alt="" coords="521,5,745,32"/>
-</map>

@@ -1,4 +1,0 @@
-<map id="SQLamarr::PVFinder" name="SQLamarr::PVFinder">
-<area shape="rect" id="node1" title="Identifies the primary vertices." alt="" coords="32,80,183,107"/>
-<area shape="rect" id="node2" href="$classSQLamarr_1_1BaseSqlInterface.html" title="Abstract interface with helper functions to access an SQLite DB." alt="" coords="5,5,209,32"/>
-</map>

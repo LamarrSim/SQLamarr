@@ -1,5 +1,0 @@
-<map id="SQLamarr::AbsDataLoader" name="SQLamarr::AbsDataLoader">
-<area shape="rect" id="node1" title="Abstract Interface for loading data to the internal database." alt="" coords="21,80,214,107"/>
-<area shape="rect" id="node3" href="$classSQLamarr_1_1HepMC2DataLoader.html" title="AbsDataLoader implementation for Ascii HepMC2 data." alt="" coords="5,155,229,181"/>
-<area shape="rect" id="node2" href="$classSQLamarr_1_1BaseSqlInterface.html" title="Abstract interface with helper functions to access an SQLite DB." alt="" coords="15,5,219,32"/>
-</map>
