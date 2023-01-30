@@ -8,6 +8,7 @@
 // Local
 #include "SQLamarr/preprocessor_symbols.h"
 #include "SQLamarr/PVReconstruction.h"
+#include "SQLamarr/GlobalPRNG.h"
 
 namespace SQLamarr 
 {
@@ -52,7 +53,7 @@ namespace SQLamarr
     : BaseSqlInterface(db)
     , m_parametrization (parametrization)
   {
-    using_sql_function( "rnd_ggg", 7, &_sql_rnd_ggg );
+    using_sql_function( "rnd_ggg", 6, &_sql_rnd_ggg );
   }
 
   //============================================================================
@@ -64,27 +65,26 @@ namespace SQLamarr
       sqlite3_value **argv
       )
   {
-    if (argc == 7)
+    if (argc == 6)
     {
-      const double seed = sqlite3_value_double(argv[0]);
-      const double mu = sqlite3_value_double(argv[1]);
-      const double f1 = sqlite3_value_double(argv[2]);
-      const double f2 = sqlite3_value_double(argv[3]);
-      const double sigma1 = sqlite3_value_double(argv[4]);
-      const double sigma2 = sqlite3_value_double(argv[5]);
-      const double sigma3 = sqlite3_value_double(argv[6]);
+      const double mu = sqlite3_value_double(argv[0]);
+      const double f1 = sqlite3_value_double(argv[1]);
+      const double f2 = sqlite3_value_double(argv[2]);
+      const double sigma1 = sqlite3_value_double(argv[3]);
+      const double sigma2 = sqlite3_value_double(argv[4]);
+      const double sigma3 = sqlite3_value_double(argv[5]);
 
-      std::mt19937 generator (seed);
+      auto generator = GlobalPRNG::get_or_create(context);
       std::normal_distribution<double> one_g;
       std::uniform_real_distribution<double> uniform;
-      const double r = uniform(generator);
+      const double r = uniform(*generator);
       const double sigma = (
           r < f1 ? sigma1 :
           r < f1 + f2 ? sigma2 :
           sigma3
           );
 
-      const double smear = one_g(generator)*sigma + mu;
+      const double smear = one_g(*generator)*sigma + mu;
       
       sqlite3_result_double(context, smear);
       return;
@@ -158,9 +158,9 @@ namespace SQLamarr
       SELECT 
         mcv.mcvertex_id, mcv.genevent_id, 
         ? AS vertex_type, 
-        mcv.x + rnd_ggg(random(), ?, ?, ?, ?, ?, ?), 
-        mcv.y + rnd_ggg(random(), ?, ?, ?, ?, ?, ?), 
-        mcv.z + rnd_ggg(random(), ?, ?, ?, ?, ?, ?) 
+        mcv.x + rnd_ggg(?, ?, ?, ?, ?, ?), 
+        mcv.y + rnd_ggg(?, ?, ?, ?, ?, ?), 
+        mcv.z + rnd_ggg(?, ?, ?, ?, ?, ?) 
       FROM MCVertices AS mcv
       WHERE mcv.is_primary == TRUE
       )");

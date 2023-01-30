@@ -3,6 +3,7 @@
 #include <random>
 #include "sqlite3.h"
 #include "SQLamarr/custom_sql_functions.h"
+#include "SQLamarr/GlobalPRNG.h"
 
 
 void sqlamarr_create_sql_functions (sqlite3 *db)
@@ -165,8 +166,8 @@ void _sqlamarr_sql_random_uniform (
     sqlite3_value **argv
     )
 {
-  static std::mt19937 generator;
+  auto generator = SQLamarr::GlobalPRNG::get_or_create(context);
   std::uniform_real_distribution<double> uniform;
 
-  sqlite3_result_double(context, uniform(generator));
+  sqlite3_result_double(context, uniform(*generator));
 }
