@@ -16,6 +16,7 @@ project(SQLamarr)
   include_directories(${LAMARR_INCLUDE_DIR})
 
   add_executable(SQLamarr
+      src/custom_sql_functions.cpp
       src/db_functions.cpp
       src/BaseSqlInterface.cpp
       src/AbsDataLoader.cpp
@@ -23,10 +24,15 @@ project(SQLamarr)
       src/PVFinder.cpp
       src/PVReconstruction.cpp
       src/MCParticleSelector.cpp
+      src/Plugin.cpp
       src/main.cpp
       )
 
-  target_link_libraries(SQLamarr ${HEPMC3_LIB} ${SQLite3_LIBRARIES})
+  target_link_libraries(SQLamarr 
+      m dl
+      ${HEPMC3_LIB} 
+      ${SQLite3_LIBRARIES}
+      )
 
 
   add_custom_target (docs ALL 

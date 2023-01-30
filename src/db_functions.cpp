@@ -1,7 +1,10 @@
-#include "SQLamarr/db_functions.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
+#include <algorithm>
+#include <cmath>
+
+#include "SQLamarr/db_functions.h"
 #include "schema.sql"
 
 namespace SQLamarr
@@ -161,6 +164,47 @@ namespace SQLamarr
     }
 
     return ret.str();
+  }
+
+  //==========================================================================
+  // read_as_float
+  //==========================================================================
+  float read_as_float(sqlite3_stmt* stmt, int iCol)
+  {
+    float buf;
+    switch (sqlite3_column_type(stmt, iCol))
+    {
+      case SQLITE_INTEGER:
+        buf = static_cast<float>(sqlite3_column_int(stmt, iCol));
+        break;
+      case SQLITE_FLOAT:
+        buf = static_cast<float>(sqlite3_column_double(stmt, iCol));
+        break;
+      default:
+        buf = NAN;
+    }
+
+    return buf;
+  }
+
+
+  //==========================================================================
+  // validate_token
+  //==========================================================================
+  void validate_token(const std::string& token)
+  {
+    const int forbidden = std::count_if(token.begin(), token.end(),
+        [](unsigned char c){ return !std::isalnum(c) && c != '_'; }
+        );
+
+    if (forbidden)
+    {
+      std::cerr 
+        << "Found non alphanumeric token in SQL query: " 
+        << token
+        << std::endl;
+      throw std::runtime_error("Invalid token");
+    }
   }
 
 }

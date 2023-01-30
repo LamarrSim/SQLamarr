@@ -53,7 +53,6 @@ namespace SQLamarr
     , m_parametrization (parametrization)
   {
     using_sql_function( "rnd_ggg", 7, &_sql_rnd_ggg );
-    using_sql_function( "rnd_ggg", 7, &_sql_rnd_ggg );
   }
 
   //============================================================================

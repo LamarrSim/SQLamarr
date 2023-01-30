@@ -7,6 +7,7 @@
 #include "SQLamarr/db_functions.h"
 #include "SQLamarr/MCParticleSelector.h"
 #include "SQLamarr/PVReconstruction.h"
+#include "SQLamarr/Plugin.h"
 #include <memory>
 #include <glob.h>
 
@@ -48,7 +49,7 @@ int main(int argc, char* argv[])
   size_t runNumber = 456;
 
   for (std::string& file_path: file_paths)
-    if (evtNumber < 1000) 
+    if (evtNumber < 1) 
       loader.load(file_path, runNumber, evtNumber++);
 
   // Runs the PVFinder algorithm
@@ -64,6 +65,39 @@ int main(int argc, char* argv[])
         "PVSmearing", "2016_pp_MagUp")
       );
   pv_reco.execute();
+
+  SQLamarr::Plugin acceptance_model (db,
+        "/home/lucio/Documents/SQLamarr/temporary_data/models/lhcb.trk.2016MU.so",
+        "acceptance", 
+        R"(
+        SELECT 
+          p.mcparticle_id AS jKey,
+          ov.x AS mc_x, 
+          ov.y AS mc_y, 
+          ov.z AS mc_z,
+          log10(norm2(p.px, p.py, p.pz)) AS mc_log10_p,
+          p.px/p.pz AS mc_tx, 
+          p.py/p.pz AS mc_ty,
+          pseudorapidity(p.px, p.py, p.pz) AS mc_eta,
+          azimuthal(p.px, p.py, p.pz) AS mc_phi,
+          abs(p.pid) == 11 AS mc_is_e,
+          abs(p.pid) == 13 AS mc_is_mu,
+          (
+            abs(p.pid) == 211 OR abs(p.pid) == 321 OR abs(p.pid) == 2212  
+          ) AS mc_is_h,
+          propagation_charge(p.pid) AS mc_charge
+        FROM MCParticles AS p
+        INNER JOIN MCVertices AS ov ON p.production_vertex = ov.mcvertex_id
+        WHERE 
+          p.pz > 1.
+          AND
+          propagation_charge(p.pid) <> 0.
+        )",
+        "tmp_acceptance_out", {"acceptance"}
+      );
+
+  acceptance_model.execute();
+  
 
   std::cout << SQLamarr::dump_table(db, "SELECT COUNT(*) as n_files FROM DataSources") << std::endl;
   std::cout << SQLamarr::dump_table(db, "SELECT * FROM DataSources LIMIT 10") << std::endl;
@@ -89,6 +123,10 @@ int main(int argc, char* argv[])
     )");
 
   std::cout << SQLamarr::dump_table(db, "SELECT * FROM Vertices LIMIT 10") << std::endl;
+  std::cout << SQLamarr::dump_table(db, R"(
+    SELECT *, random_uniform() < acceptance AS in_acceptance
+     FROM tmp_acceptance_out LIMIT 10)") << std::endl;
+     
 
   return 0;
 }
