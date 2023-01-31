@@ -1,14 +1,27 @@
 #include "SQLamarr/BaseSqlInterface.h"
 #include "SQLamarr/custom_sql_functions.h"
+#include "sqlite3.h"
+#include <iostream>
 
 namespace SQLamarr
 {
+  //==========================================================================
+  // Constructor
+  //==========================================================================
   BaseSqlInterface::BaseSqlInterface(SQLite3DB& db)
   : m_database (db)
   {
     sqlamarr_create_sql_functions(db.get());
   }
 
+  //==========================================================================
+  // Destructor
+  //==========================================================================
+  BaseSqlInterface::~BaseSqlInterface()
+  {
+    for (auto q = m_queries.begin(); q != m_queries.end(); ++q)
+      sqlite3_finalize(q->second);
+  }
 
   //==========================================================================
   // get_statement

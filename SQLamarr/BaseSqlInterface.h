@@ -26,6 +26,7 @@ namespace SQLamarr
     public: 
       /// Constructor, acquiring the database without ownership
       BaseSqlInterface(SQLite3DB& db);
+      virtual ~BaseSqlInterface();
 
     protected: // members
       SQLite3DB& m_database; ///< Reference to the SQLite database (not owned).
