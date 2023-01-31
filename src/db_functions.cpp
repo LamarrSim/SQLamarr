@@ -163,6 +163,7 @@ namespace SQLamarr
       ret << std::endl;
     }
 
+    sqlite3_finalize(stmt);
     return ret.str();
   }
 
