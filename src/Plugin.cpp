@@ -72,7 +72,7 @@ namespace SQLamarr
   std::string Plugin::compose_delete_query()
   {
     std::stringstream s;
-    s << "DROP TABLE IF EXISTS " << m_output_table << ";";
+    s << "DELETE FROM " << m_output_table << ";";
     return s.str();
   }
 
@@ -82,7 +82,8 @@ namespace SQLamarr
   std::string Plugin::compose_create_query()
   {
     std::stringstream s;
-    s << "CREATE TABLE " << m_output_table << "(";
+    s << "CREATE TEMPORARY TABLE IF NOT EXISTS " 
+      << m_output_table << "(";
 
     for (auto c: m_refkeys)
       s << c << " INTEGER" << ", ";
@@ -120,18 +121,20 @@ namespace SQLamarr
   //============================================================================
   void Plugin::execute ()
   {
-    // Prepare the queries and initialize the database
-    // DROP TABLE IF EXISTS
-    sqlite3_stmt* delete_output_table = get_statement(
-        "delete_output_table", compose_delete_query().c_str()
-      );
-    sqlite3_step(delete_output_table);
+    begin_transaction();
 
-    // CREATE TABLE
+    // Prepare the queries and initialize the database
+    // CREATE TEMPORARY TABLE IF NOT EXISTS
     sqlite3_stmt* create_output_table = get_statement(
         "create_output_table", compose_create_query().c_str()
         );
     sqlite3_step(create_output_table);
+    
+    // DELETE FROM table
+    sqlite3_stmt* delete_output_table = get_statement(
+        "delete_output_table", compose_delete_query().c_str()
+      );
+    sqlite3_step(delete_output_table);
 
     // INSERT INTO TABLE
     sqlite3_stmt* insert_in_output_table = get_statement(
@@ -161,7 +164,7 @@ namespace SQLamarr
         const std::string column(sqlite3_column_name(select_input, iCol));
         std::vector<std::string> col_names = get_column_names();
         auto col_iterator = std::find(m_refkeys.begin(), m_refkeys.end(), column);
-        
+
         // if an index, wraps it to the insert query
         if (col_iterator != m_refkeys.end())
         {
@@ -175,7 +178,7 @@ namespace SQLamarr
         else // otherwise, it is an input for the parametrization
           input.push_back(read_as_float(select_input, iCol));
       }
-      
+
       // Execute the external function defining the parametrization
 
       m_func(output.data(), input.data());
@@ -183,12 +186,14 @@ namespace SQLamarr
       // Fill the output table with the parametrization output
       for (int iOutput = 0; iOutput < m_outputs.size(); ++iOutput)
         sqlite3_bind_double(
-          insert_in_output_table, 
-          m_refkeys.size() + iOutput + 1, 
-          output[iOutput]
-          );
+            insert_in_output_table, 
+            m_refkeys.size() + iOutput + 1, 
+            output[iOutput]
+            );
 
       sqlite3_step(insert_in_output_table);
     }
+
+    end_transaction();
   }
 }
