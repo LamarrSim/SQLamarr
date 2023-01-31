@@ -23,9 +23,7 @@ std::vector<std::string> globVector(const std::string& pattern);
 
 int main(int argc, char* argv[])
 {
-  std::string path{"/home/lucio/Documents/SQLamarr"
-    "/temporary_data/hepmc/LHCb_DSt_Pi/*.mc2"};
-
+  std::string path{"../temporary_data/HepMC2-ascii/DSt_Pi.hepmc2/evt*.mc2"};
 
   std::vector<std::string> file_paths = globVector(path); 
 //  {
@@ -61,17 +59,17 @@ int main(int argc, char* argv[])
 
   SQLamarr::PVReconstruction pv_reco(db,
       SQLamarr::PVReconstruction::load_parametrization(
-        "/home/lucio/Documents/SQLamarr/temporary_data/PrimaryVertex/PrimaryVertexSmearing.db",
+        "../temporary_data/PrimaryVertex/PrimaryVertexSmearing.db",
         "PVSmearing", "2016_pp_MagUp")
       );
   pv_reco.execute();
 
   SQLamarr::Plugin acceptance_model (db,
-        "/home/lucio/Documents/SQLamarr/temporary_data/models/lhcb.trk.2016MU.so",
+        "../temporary_data/models/lhcb.trk.2016MU.so",
         "acceptance", 
         R"(
         SELECT 
-          p.mcparticle_id AS jKey,
+          mcparticle_id,
           ov.x AS mc_x, 
           ov.y AS mc_y, 
           ov.z AS mc_z,
@@ -93,7 +91,7 @@ int main(int argc, char* argv[])
           AND
           propagation_charge(p.pid) <> 0.
         )",
-        "tmp_acceptance_out", {"acceptance"}
+        "tmp_acceptance_out", {"acceptance"}, {"mcparticle_id"}
       );
 
   acceptance_model.execute();
