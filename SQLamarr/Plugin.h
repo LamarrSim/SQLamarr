@@ -65,7 +65,7 @@ namespace SQLamarr
       virtual void eval_parametrization (float* output, const float* input)
       { m_func(output, input); }
 
-    private: // Types
+    protected: // Types
       typedef float *(*mlfunc)(float *, const float*);
 
     private: // Properties
@@ -77,6 +77,8 @@ namespace SQLamarr
       const std::vector<std::string> m_refkeys;
 
       void *m_handle;
+
+    protected: //Properties 
       mlfunc m_func;
 
     private: // Methods

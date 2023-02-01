@@ -181,7 +181,7 @@ namespace SQLamarr
 
       // Execute the external function defining the parametrization
 
-      m_func(output.data(), input.data());
+      eval_parametrization(output.data(), input.data());
 
       // Fill the output table with the parametrization output
       for (int iOutput = 0; iOutput < m_outputs.size(); ++iOutput)

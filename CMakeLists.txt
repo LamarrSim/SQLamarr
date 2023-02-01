@@ -25,6 +25,7 @@ project(SQLamarr)
       src/PVReconstruction.cpp
       src/MCParticleSelector.cpp
       src/Plugin.cpp
+      src/GenerativePlugin.cpp
       src/main.cpp
       )
 
