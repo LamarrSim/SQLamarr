@@ -27,45 +27,71 @@ of the SQL query, but in principle they could be expressed in query language
 as well.
 
 ## Geometrical functions
-### `norm2 (x, y, z)`
-Return the norm of a vector with coordinate $(x, y, z)$: 
+
+### Norm
+```sql
+norm2 (x, y, z)
+``` 
+
+Return the norm of a vector with coordinate \f$(x, y, z)\f$: 
 $$\sqrt{x^2 + y^2 + z^2}.$$ 
 
-### `pseudorapidity (x, y, z)`
-Return the [pseudorapidity](https://en.wikipedia.org/wiki/Pseudorapidity) $\eta$ 
-of a vector with coordinate $(x, y, z)$.
+### Pseudorapidity
+```
+pseudorapidity (x, y, z)
+```
+Return the [pseudorapidity](https://en.wikipedia.org/wiki/Pseudorapidity)
+\f$\eta\f$ 
+of a vector with coordinate \f$(x, y, z)\f$.
 $$
 \eta = -\log\left[\tan\left(\frac{\theta}{2}\right)\right] 
 \qquad \mbox{where}\qquad
 \theta = \arctan\left(\frac{\sqrt{x^2 + y^2}}{z^2}\right)
 $$
-### `polar (x, y, z)`
+
+
+### Spherical coordinates
+```sql
+polar (x, y, z)
+```
 Return the [aziuthal angle](https://en.wikipedia.org/wiki/Spherical_coordinate_system) 
-$\theta$ of a vector with coordinate $(x, y, z)$.
+\f$\theta\f$ of a vector with coordinate \f$(x, y, z)\f$.
 $$
 \theta = \arctan\left(\frac{\sqrt{x^2 + y^2}}{z}\right)
 $$
-### `azimuthal (x, y, z)`
+
+```sql
+azimuthal (x, y, z)
+```
 Return the [polar angle](https://en.wikipedia.org/wiki/Spherical_coordinate_system) 
-$\varphi$ of a vector with coordinate $(x, y, z)$.
+\f$\varphi\f$ of a vector with coordinate \f$(x, y, z)\f$.
 $$
 \varphi = \arctan\left(\frac{y}{x}\right)
 $$
 
 ## Random functions
-### `random_uniform ()`
+### Uniform distribution
+```sql
+random_uniform ()
+```
 Generate a random number uniformly distributed between 0 and 1.
 
 The pseudo-random sequence is stored as a function of the database instance
 which should never be shared among multiple threads.
 
-### `random_normal ()`
-Generate a random number normally distributed as $\mathcal G(0,1)$.
+### Standard normal distribution
+```sql
+random_normal ()
+```
+Generate a random number normally distributed as \f$\mathcal G(0,1)\f$.
 
 The pseudo-random sequence is stored as a function of the database instance
 which should never be shared among multiple threads.
 
-### `random_category (p1 [, p2[, ... [, p10]]])`
+### Multinomial distribution (category)
+```sql
+random_category (p1 [, p2[, ... [, p10]]])
+```
 Generate an integer random number according to the probabilities passed as 
 arguments.
 For example,
@@ -77,11 +103,14 @@ will generate 0 with a probability of 20%, 1 with a 10% probability and 3 with
 70% probability.
 
 ## Miscellaneous
-### `propagation_charge (pdg_id)`
+### Particle Charge (for propagation)
+```sql
+propagation_charge (pdg_id)
+```
 Define the charge based on the PDG ID code passed as an argument.
 In particular:
  * 0: for photons and neutrons;
- * &pm;1 for pions, kaons and protons;
+ * \f$\pm\f$1 for pions, kaons and protons;
  * `NULL` for all other particles that Lamarr won't propagate through the
    detector;
 
