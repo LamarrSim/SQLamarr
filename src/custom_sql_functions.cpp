@@ -6,6 +6,9 @@
 #include "SQLamarr/GlobalPRNG.h"
 
 
+//==============================================================================
+// sqlamarr_create_sql_functions: define all the other functions in SQL
+//==============================================================================
 void sqlamarr_create_sql_functions (sqlite3 *db)
 {
   int nPars;
@@ -40,6 +43,11 @@ void sqlamarr_create_sql_functions (sqlite3 *db)
       SQLITE_UTF8, NULL, &_sqlamarr_sql_random_uniform, NULL, NULL
       );
 
+  sqlite3_create_function(db,
+      "random_normal", 0,
+      SQLITE_UTF8, NULL, &_sqlamarr_sql_random_normal, NULL, NULL
+      );
+
   for (nPars = 1; nPars < 10; ++nPars)
     sqlite3_create_function(db,
         "random_category", nPars,
@@ -47,6 +55,9 @@ void sqlamarr_create_sql_functions (sqlite3 *db)
         );
 }
 
+//==============================================================================
+// norm2
+//==============================================================================
 void _sqlamarr_sql_norm2 (
     sqlite3_context *context,
     int argc,
@@ -67,6 +78,9 @@ void _sqlamarr_sql_norm2 (
   sqlite3_result_double(context, res);
 }
 
+//==============================================================================
+// pseudorapidity
+//==============================================================================
 void _sqlamarr_sql_pseudorapidity (
     sqlite3_context *context,
     int argc,
@@ -91,6 +105,9 @@ void _sqlamarr_sql_pseudorapidity (
   sqlite3_result_double(context, eta);
 }
 
+//==============================================================================
+// azimuthal
+//==============================================================================
 void _sqlamarr_sql_azimuthal (
     sqlite3_context *context,
     int argc,
@@ -112,6 +129,9 @@ void _sqlamarr_sql_azimuthal (
   sqlite3_result_double(context, atan2(y, x));
 }
 
+//==============================================================================
+// polar
+//==============================================================================
 void _sqlamarr_sql_polar (
     sqlite3_context *context,
     int argc,
@@ -133,6 +153,9 @@ void _sqlamarr_sql_polar (
   sqlite3_result_double(context, atan2(x*x + y*y, z));
 }
 
+//==============================================================================
+// propagation_charge
+//==============================================================================
 void _sqlamarr_sql_propagation_charge (
     sqlite3_context *context,
     int argc,
@@ -166,6 +189,9 @@ void _sqlamarr_sql_propagation_charge (
 }
 
 
+//==============================================================================
+// random_uniform
+//==============================================================================
 void _sqlamarr_sql_random_uniform (
     sqlite3_context *context,
     int argc,
@@ -178,6 +204,24 @@ void _sqlamarr_sql_random_uniform (
   sqlite3_result_double(context, uniform(*generator));
 }
 
+//==============================================================================
+// random_normal
+//==============================================================================
+void _sqlamarr_sql_random_normal (
+    sqlite3_context *context,
+    int argc,
+    sqlite3_value **argv
+    )
+{
+  auto generator = SQLamarr::GlobalPRNG::get_or_create(context);
+  std::normal_distribution<double> gaussian;
+
+  sqlite3_result_double(context, gaussian(*generator));
+}
+
+//==============================================================================
+// random_category
+//==============================================================================
 void _sqlamarr_sql_random_category (
     sqlite3_context *context,
     int argc,
