@@ -39,6 +39,12 @@ void sqlamarr_create_sql_functions (sqlite3 *db)
       "random_uniform", 0,
       SQLITE_UTF8, NULL, &_sqlamarr_sql_random_uniform, NULL, NULL
       );
+
+  for (nPars = 1; nPars < 10; ++nPars)
+    sqlite3_create_function(db,
+        "random_category", nPars,
+        SQLITE_UTF8, NULL, &_sqlamarr_sql_random_category, NULL, NULL
+        );
 }
 
 void _sqlamarr_sql_norm2 (
@@ -170,4 +176,39 @@ void _sqlamarr_sql_random_uniform (
   std::uniform_real_distribution<double> uniform;
 
   sqlite3_result_double(context, uniform(*generator));
+}
+
+void _sqlamarr_sql_random_category (
+    sqlite3_context *context,
+    int argc,
+    sqlite3_value **argv
+    )
+{
+  auto generator = SQLamarr::GlobalPRNG::get_or_create(context);
+  std::uniform_real_distribution<float> uniform;
+  float sum = 0; 
+  float r = uniform(*generator);
+  int iArg;
+  int ret = argc;
+  float buf;
+
+  // Check probability is non-negative
+  for (iArg = 0; iArg < argc; ++iArg)
+    if (sqlite3_value_double(argv[iArg]) < 0)
+    {
+      sqlite3_result_error(context, "Negative probability", -1);
+      return;
+    }
+
+  // Compute cumulative and corresponding category
+  for (iArg = 0; iArg < argc; ++iArg)
+  {
+    sum += static_cast<float>(sqlite3_value_double(argv[iArg]));
+    if (r < sum && ret == argc) ret = iArg;
+  }
+  // Check sum of probabilities is normalized or normalizable
+  if (sum > 1.)
+    sqlite3_result_error(context, "Sum of probabilities larger than 1", -1);
+  else
+    sqlite3_result_int(context, ret);
 }

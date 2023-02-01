@@ -10,4 +10,5 @@ void _sqlamarr_sql_polar (sqlite3_context*, int, sqlite3_value**);
 void _sqlamarr_sql_azimuthal (sqlite3_context*, int, sqlite3_value**);
 void _sqlamarr_sql_propagation_charge (sqlite3_context*, int, sqlite3_value**);
 void _sqlamarr_sql_random_uniform (sqlite3_context*, int, sqlite3_value**);
+void _sqlamarr_sql_random_category (sqlite3_context*, int, sqlite3_value**);
 
