@@ -35,6 +35,8 @@ project(SQLamarr)
       ${SQLite3_LIBRARIES}
       )
 
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DALLOW_RANDOM_DEVICE_FOR_SEEDING")
+
 
   add_custom_target (docs ALL 
       COMMAND doxygen 
