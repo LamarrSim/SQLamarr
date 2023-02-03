@@ -69,6 +69,25 @@ $$
 \varphi = \arctan\left(\frac{y}{x}\right)
 $$
 
+### Closest to beam z
+```sql
+z_closest_to_beam(x, y, z, tx, ty)
+```
+Given a linear trajectory passing through \f$(x, y, z)\f$ and with slopes
+$$
+\frac{\mathrm dx}{\mathrm dz} = \mathtt{tx} \qquad \mbox{and} \qquad
+\frac{\mathrm dy}{\mathrm dz} = \mathtt{ty},
+$$
+returns the \f$z'\f$ coordinate of the point where the particle 
+is the closest to the z axis (\f$x = y = 0\f$).
+
+
+In practice, it evaluates
+$$
+z' = \frac{t_x^2 z - t_x x + t_y^2 z - t_y y}{t_x^2 + t_y^2}
+$$
+
+
 ## Random functions
 ### Uniform distribution
 ```sql

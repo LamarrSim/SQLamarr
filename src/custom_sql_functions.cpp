@@ -53,6 +53,12 @@ void sqlamarr_create_sql_functions (sqlite3 *db)
         "random_category", nPars,
         SQLITE_UTF8, NULL, &_sqlamarr_sql_random_category, NULL, NULL
         );
+
+  sqlite3_create_function(db,
+      "z_closest_to_beam", 5,
+      SQLITE_UTF8, NULL, &_sqlamarr_sql_z_closest_to_beam, NULL, NULL
+      );
+
 }
 
 //==============================================================================
@@ -77,6 +83,34 @@ void _sqlamarr_sql_norm2 (
 
   sqlite3_result_double(context, res);
 }
+
+//==============================================================================
+// z_closest_to_beam
+//==============================================================================
+void _sqlamarr_sql_z_closest_to_beam (
+    sqlite3_context *context,
+    int argc,
+    sqlite3_value **argv
+    )
+{
+  if (argc != 5)
+  {
+    sqlite3_result_null(context);
+    return;
+  }
+
+  int i = 0;
+  const double x0 = sqlite3_value_double(argv[i++]);
+  const double y0 = sqlite3_value_double(argv[i++]);
+  const double z0 = sqlite3_value_double(argv[i++]);
+  const double tx = sqlite3_value_double(argv[i++]);
+  const double ty = sqlite3_value_double(argv[i++]);
+
+  const double ctb_z = (tx*tx*z0 - tx*x0 + ty*ty*z0 - ty*y0)/(tx*tx + ty*ty);
+    
+  sqlite3_result_double(context, ctb_z);
+}
+
 
 //==============================================================================
 // pseudorapidity
