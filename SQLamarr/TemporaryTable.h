@@ -50,9 +50,12 @@ namespace SQLamarr
             ///< Name of the output table
           const std::vector<std::string>& columns,
             ///< List of the names assigned to the output columns
-          const std::string& select_statement
+          const std::string& select_statement,
             ///< An SQL SELECT statement selecting exactly the same 
             ///  number of variables as defined by the column argument
+          bool make_persistent = false
+            ///< Override the temporary configuration to make 
+            //   the table "persistent"
           );
 
 
@@ -73,5 +76,6 @@ namespace SQLamarr
       std::string compose_create_query() const;
       std::string compose_delete_query() const;
       std::string compose_insert_query() const;
+      bool m_make_persistent;
   };
 }

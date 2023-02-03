@@ -16,12 +16,14 @@ namespace SQLamarr
           SQLite3DB& db,
           const std::string& output_table,
           const std::vector<std::string>& columns,
-          const std::string& select_statement
+          const std::string& select_statement,
+          bool make_persistent
           )
     : BaseSqlInterface (db)
     , m_output_table (output_table)
     , m_columns (columns)
     , m_select_statement (select_statement)
+    , m_make_persistent (make_persistent)
   {
     validate_token (output_table);
     for (auto& column_name: m_columns)
@@ -34,7 +36,12 @@ namespace SQLamarr
   std::string TemporaryTable::compose_create_query() const
   {
     std::stringstream s;
-    s << "CREATE TEMPORARY TABLE IF NOT EXISTS " 
+    s << "CREATE ";
+
+    if (!m_make_persistent)
+      s << "TEMPORARY ";
+
+    s << "TABLE IF NOT EXISTS " 
       << m_output_table << "(";
 
     for (auto c: m_columns)
