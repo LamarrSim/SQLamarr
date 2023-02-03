@@ -144,9 +144,38 @@ int main(int argc, char* argv[])
           INNER JOIN tmp_acceptance_out AS acc
             ON eff.mcparticle_id = acc.mcparticle_id
           WHERE random_category(1 - acc.acceptance, acc.acceptance) == 1
-      )");
+      )",
+      /*make_persistent*/ true
+      );
 
   assign_track_cat.execute();
+
+  SQLamarr::TemporaryTable propagate_to_ctb (db,
+      "tmp_closest_to_beam", {"mcparticle_id", "x", "y", "z"},
+      R"( WITH ctb AS (
+            SELECT 
+              mcparticle_id,
+              z_closest_to_beam(ov.x, ov.y, ov.z, p.px/p.pz, p.py/p.pz) AS z,
+              ov.x AS x0,
+              ov.y AS y0,
+              ov.z AS z0,
+              p.px/p.pz AS tx,
+              p.py/p.pz AS ty
+            FROM MCParticles AS p
+            INNER JOIN MCVertices AS ov
+              ON p.production_vertex = ov.mcvertex_id
+          )
+          SELECT 
+            mcparticle_id,
+            x0 + (z - z0)*tx AS x,
+            y0 + (z - z0)*ty AS y,
+            z AS z
+          FROM ctb;
+      )",
+    /*make_persistent*/ true
+    );
+  propagate_to_ctb.execute();
+              
 
   SQLamarr::GenerativePlugin resolution_model (db,
         "../temporary_data/models/lhcb.trk.2016MU.so",
@@ -154,9 +183,9 @@ int main(int argc, char* argv[])
         R"(
         SELECT 
           p.mcparticle_id,
-          ov.x AS mc_x, -- This is wrong! Should use ClosestToBeam instead!!!
-          ov.y AS mc_y, -- WRONG!
-          ov.z AS mc_z, -- WRONG!
+          ctb.x AS mc_x, 
+          ctb.y AS mc_y, 
+          ctb.z AS mc_z, 
           p.px/p.pz AS mc_tx, 
           p.py/p.pz AS mc_ty,
           log10(norm2(p.px, p.py, p.pz)) AS mc_log10_p,
@@ -170,6 +199,8 @@ int main(int argc, char* argv[])
         INNER JOIN MCVertices AS ov ON p.production_vertex = ov.mcvertex_id
         INNER JOIN tmp_particles_recoed_as AS recguess 
           ON p.mcparticle_id = recguess.mcparticle_id
+        INNER JOIN tmp_closest_to_beam AS ctb 
+          ON p.mcparticle_id = ctb.mcparticle_id
         WHERE 
           recguess.track_type BETWEEN 3 AND 5;
         )",
@@ -189,9 +220,9 @@ int main(int argc, char* argv[])
         R"(
         SELECT 
           p.mcparticle_id,
-          ov.x AS mc_x, -- This is wrong! Should use ClosestToBeam instead!!!
-          ov.y AS mc_y, -- WRONG!
-          ov.z AS mc_z, -- WRONG!
+          ctb.x AS mc_x, 
+          ctb.y AS mc_y, 
+          ctb.z AS mc_z, 
           p.px/p.pz AS mc_tx, 
           p.py/p.pz AS mc_ty,
           log10(norm2(p.px, p.py, p.pz)) AS mc_log10_p,
@@ -210,8 +241,10 @@ int main(int argc, char* argv[])
           ON p.mcparticle_id = recguess.mcparticle_id
         INNER JOIN tmp_resolution_out AS tmpres 
           ON p.mcparticle_id = tmpres.mcparticle_id
+        INNER JOIN tmp_closest_to_beam AS ctb 
+          ON p.mcparticle_id = ctb.mcparticle_id
         WHERE 
-          recguess.track_type BETWEEN 3 AND 5;
+          recguess.track_type >= 3 AND recguess.track_type <= 5
         )",
         "tmp_covariance_out", 
         {
@@ -236,6 +269,54 @@ int main(int argc, char* argv[])
       );
 
   covariance_model.execute();
+
+  SQLamarr::TemporaryTable covariance (db,
+      "covariance", 
+      { "cov00", "cov01", "cov02", "cov03", "cov04", 
+                 "cov11", "cov02", "cov03", "cov04", 
+                          "cov22", "cov03", "cov04", 
+                                   "cov33", "cov04", 
+                                            "cov04" 
+      },
+      R"(
+      WITH shortcut AS (
+          SELECT
+            sqrt(exp(log_cov_ClosestToBeam_0_0)) AS sig0, 
+            sqrt(exp(log_cov_ClosestToBeam_1_1)) AS sig1, 
+            sqrt(exp(log_cov_ClosestToBeam_2_2)) AS sig2, 
+            sqrt(exp(log_cov_ClosestToBeam_3_3)) AS sig3, 
+            sqrt(exp(log_cov_ClosestToBeam_4_4)) AS sig4, 
+            corr_ClosestToBeam_0_1               AS cor01,
+            corr_ClosestToBeam_0_2               AS cor02,
+            corr_ClosestToBeam_1_2               AS cor03,
+            corr_ClosestToBeam_0_3               AS cor04,
+            corr_ClosestToBeam_1_3               AS cor11,
+            corr_ClosestToBeam_2_3               AS cor12,
+            corr_ClosestToBeam_0_4               AS cor13,
+            corr_ClosestToBeam_1_4               AS cor23,
+            corr_ClosestToBeam_2_4               AS cor24,
+            corr_ClosestToBeam_3_4               AS cor34
+          FROM tmp_covariance_out
+        )
+      SELECT
+        sig0 * sig0,
+        cor01 * sig0 * sig1, 
+        cor02 * sig0 * sig2, 
+        cor03 * sig0 * sig3, 
+        cor04 * sig0 * sig4, 
+        sig1 * sig1,
+        cor12 * sig1 * sig2, 
+        cor13 * sig1 * sig3, 
+        cor14 * sig1 * sig4, 
+        sig2 * sig2,
+        cor23 * sig2 * sig3, 
+        cor24 * sig2 * sig4, 
+        sig3 * sig3,
+        cor34 * sig3 * sig4, 
+        sig4 * sig3
+      FROM shortcut;
+      )", /*make_persistent*/ true);
+
 
 
   std::cout << SQLamarr::dump_table(db, "SELECT COUNT(*) as n_files FROM DataSources") << std::endl;
@@ -275,12 +356,16 @@ int main(int argc, char* argv[])
       LIMIT 10)") << std::endl;
 
   std::cout << SQLamarr::dump_table(db, R"(
-      SELECT * FROM tmp_resolution_out
+      SELECT * FROM tmp_resolution_out LIMIT 10
     )");
 
   std::cout << SQLamarr::dump_table(db, R"(
-      SELECT * FROM tmp_covariance_out
+      SELECT * FROM tmp_covariance_out LIMIT 10
     )");
+
+  std::cout << SQLamarr::dump_table(db, R"(
+    SELECT * FROM tmp_closest_to_beam LIMIT 10
+  )");
      
 
   return 0;
