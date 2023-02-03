@@ -4,6 +4,7 @@
 #include "SQLamarr/db_functions.h"
 #include "SQLamarr/BaseSqlInterface.h"
 #include "SQLamarr/preprocessor_symbols.h"
+#include "SQLamarr/Transformer.h"
 
 namespace SQLamarr
 {
@@ -33,7 +34,7 @@ namespace SQLamarr
     More advanced or branched selection criteria can be defined by 
     inheriting from this class and overriding the `keep` method.
   */
-  class MCParticleSelector: public BaseSqlInterface
+  class MCParticleSelector: public BaseSqlInterface, Transformer
   {
     public:
       /// Initializes and configures the algorithm
@@ -83,7 +84,7 @@ namespace SQLamarr
       );
 
       /// Execute the algorithm on the database (a batch of data)
-      void execute ();
+      void execute () override;
 
     protected:
       /// Recursive function processing a particles and its daughters (if any).

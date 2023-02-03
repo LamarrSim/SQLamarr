@@ -7,6 +7,8 @@
 // SQLamarr
 #include "SQLamarr/BaseSqlInterface.h"
 #include "SQLamarr/db_functions.h"
+#include "SQLamarr/Transformer.h"
+
 
 
 namespace SQLamarr
@@ -39,7 +41,7 @@ namespace SQLamarr
    * `SQLamarr::GenerativePlugin` creating a temporary table with random numbers
 
   */
-  class TemporaryTable: public BaseSqlInterface
+  class TemporaryTable: public BaseSqlInterface, Transformer
   {
     public:
       /// Define the operations to define to create the temp table
@@ -60,7 +62,7 @@ namespace SQLamarr
 
 
       /// Execute the SQL statements creating and populating the temp table
-      void execute ();
+      void execute () override;
 
     private:
       // Name of the output temporary table

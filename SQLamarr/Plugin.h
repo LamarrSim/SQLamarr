@@ -7,6 +7,7 @@
 // SQLamarr
 #include "SQLamarr/db_functions.h"
 #include "SQLamarr/BaseSqlInterface.h"
+#include "SQLamarr/Transformer.h"
 
 namespace SQLamarr
 {
@@ -29,7 +30,7 @@ namespace SQLamarr
   /// used as inputs for the parametrization, but transparently copied to 
   /// the output table.
   ///
-  class Plugin: public BaseSqlInterface
+  class Plugin: public BaseSqlInterface, Transformer
   {
     public:
       /// Constructor
@@ -56,7 +57,7 @@ namespace SQLamarr
 
       /// Execute the external function and copies the output 
       /// in a new table.
-      void execute ();
+      void execute () override;
 
     protected:
       /// Evaluate the external parametrization. This function can be 

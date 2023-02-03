@@ -3,6 +3,7 @@
 #include <array>
 
 #include "SQLamarr/BaseSqlInterface.h"
+#include "SQLamarr/Transformer.h"
 
 namespace SQLamarr 
 {
@@ -37,7 +38,7 @@ namespace SQLamarr
      - `sigma2`, the standard deviation of the second Gaussian 
      - `sigma3`, the standard deviation of the third Gaussian 
     */
-  class PVReconstruction: public BaseSqlInterface
+  class PVReconstruction: public BaseSqlInterface, Transformer
   {
     public:
       /// Set of parameters defining a 3-Gaussian resolution function in 1D
@@ -80,7 +81,7 @@ namespace SQLamarr
           );
 
       /// Execute the algorithm adding primary vertices to `Vertices` table
-      void execute ();
+      void execute () override;
 
     private: // members
       SmearingParametrization m_parametrization;

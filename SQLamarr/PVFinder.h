@@ -5,8 +5,9 @@
 #include "sqlite3.h"
 #include "SQLamarr/db_functions.h"
 #include "SQLamarr/BaseSqlInterface.h"
+#include "SQLamarr/Transformer.h"
 
-namespace SQLamarr 
+namespace SQLamarr
 {
   /** Identifies the primary vertices
 
@@ -26,14 +27,14 @@ namespace SQLamarr
       may depend on the generator and is defined as argument of the 
       constructor.
   */ 
-  class PVFinder: public BaseSqlInterface
+  class PVFinder: public BaseSqlInterface, Transformer
   {
     public:
       /// Constructor, with configurable signal status code
       PVFinder (SQLite3DB& db, int signal_status_code = 889);
 
       /// Execute the algorithm
-      void execute();
+      void execute() override;
 
     private: // properties
       int m_signal_status_code;
