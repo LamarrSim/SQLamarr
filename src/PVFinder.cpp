@@ -116,19 +116,19 @@ namespace SQLamarr
           SUM(is_primary) = 0
       )");
 
-    sqlite3_step(count_missing_PVs);
+    exec_stmt(count_missing_PVs);
     if (sqlite3_column_int(count_missing_PVs, 0))
     {
       sqlite3_bind_int(make_pv_from_signal, 1, m_signal_status_code);
-      sqlite3_step(make_pv_from_signal);
+      exec_stmt(make_pv_from_signal);
     }
 
     sqlite3_reset(count_missing_PVs);
 
     if (sqlite3_column_int(count_missing_PVs, 0))
-      sqlite3_step(make_pv_from_barcode);
+      exec_stmt(make_pv_from_barcode);
 
-    sqlite3_step(import_pv);
+    exec_stmt(import_pv);
 
   }
 }

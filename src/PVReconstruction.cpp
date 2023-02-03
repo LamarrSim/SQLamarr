@@ -178,6 +178,6 @@ namespace SQLamarr
       sqlite3_bind_double(reco_pv, slot_id++, m_parametrization.data[iCoord].sigma3);
     }
 
-    sqlite3_step(reco_pv);
+    exec_stmt(reco_pv);
   }
 }

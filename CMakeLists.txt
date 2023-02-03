@@ -26,6 +26,7 @@ project(SQLamarr)
       src/MCParticleSelector.cpp
       src/Plugin.cpp
       src/GenerativePlugin.cpp
+      src/TemporaryTable.cpp
       src/main.cpp
       )
 

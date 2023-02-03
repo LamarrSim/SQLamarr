@@ -128,13 +128,13 @@ namespace SQLamarr
     sqlite3_stmt* create_output_table = get_statement(
         "create_output_table", compose_create_query().c_str()
         );
-    sqlite3_step(create_output_table);
+    exec_stmt(create_output_table);
     
     // DELETE FROM table
     sqlite3_stmt* delete_output_table = get_statement(
         "delete_output_table", compose_delete_query().c_str()
       );
-    sqlite3_step(delete_output_table);
+    exec_stmt(delete_output_table);
 
     // INSERT INTO TABLE
     sqlite3_stmt* insert_in_output_table = get_statement(
@@ -149,7 +149,7 @@ namespace SQLamarr
 
 
     // Main loop on selected rows
-    while (sqlite3_step(select_input) == SQLITE_ROW)
+    while (exec_stmt(select_input))
     {
       sqlite3_reset(insert_in_output_table);
       // Buffers for parametrization input and output
@@ -191,7 +191,7 @@ namespace SQLamarr
             output[iOutput]
             );
 
-      sqlite3_step(insert_in_output_table);
+      exec_stmt(insert_in_output_table);
     }
 
     end_transaction();

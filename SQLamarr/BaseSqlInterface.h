@@ -66,5 +66,8 @@ namespace SQLamarr
           void (*xFunc)(sqlite3_context*, int, sqlite3_value**) 
                                     ///< Function pointer
           );
+
+      /// Execute a statement, possibly throwing an exception on failure
+      bool exec_stmt (sqlite3_stmt*);
   };
 }

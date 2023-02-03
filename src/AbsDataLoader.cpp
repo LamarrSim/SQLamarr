@@ -26,7 +26,7 @@ namespace SQLamarr
     sqlite3_bind_int64(stmt, 2, run_number);
     sqlite3_bind_int64(stmt, 3, evt_number);
 
-    sqlite3_step(stmt);
+    exec_stmt(stmt);
 
     return last_insert_row();
   }
@@ -56,7 +56,7 @@ namespace SQLamarr
     sqlite3_bind_double(stmt, 5, z);
     sqlite3_bind_double(stmt, 6, t);
 
-    sqlite3_step(stmt);
+    exec_stmt(stmt);
 
     return last_insert_row();
   }
@@ -91,7 +91,7 @@ namespace SQLamarr
     sqlite3_bind_double(stmt, 7, t);
     sqlite3_bind_int(stmt, 8, int(is_primary));
 
-    sqlite3_step(stmt);
+    exec_stmt(stmt);
 
     return last_insert_row();
   }
@@ -148,7 +148,7 @@ namespace SQLamarr
     sqlite3_bind_double(stmt, iVar++, pz);
     sqlite3_bind_double(stmt, iVar++, m);
 
-    sqlite3_step(stmt);
+    exec_stmt(stmt);
 
     return last_insert_row();
   }

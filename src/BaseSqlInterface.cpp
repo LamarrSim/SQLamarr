@@ -54,4 +54,21 @@ namespace SQLamarr
         );
   }
 
+  //==========================================================================
+  // exec_stmt
+  //==========================================================================
+  bool BaseSqlInterface::exec_stmt (sqlite3_stmt* stmt)
+  {
+    switch (sqlite3_step(stmt))
+    {
+      case SQLITE_DONE: return false;
+      case SQLITE_ROW:  return true;
+      default:
+        std::cerr << sqlite3_errmsg(m_database.get()) << std::endl;
+        throw std::logic_error("SQL Error");
+    }
+
+    return false;
+  }
+
 }

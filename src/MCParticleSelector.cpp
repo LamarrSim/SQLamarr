@@ -33,7 +33,7 @@ namespace SQLamarr
     begin_transaction();
     bool traversal_status = true;
 
-    while (traversal_status && sqlite3_step(get_root) == SQLITE_ROW)
+    while (traversal_status && exec_stmt(get_root))
       traversal_status &= process_particle (
           sqlite3_column_int(get_root, 0),
           sqlite3_column_int(get_root, 1)
@@ -72,7 +72,7 @@ namespace SQLamarr
     sqlite3_bind_int(get_daughters, 1, genparticle_id);
 
 
-    if (sqlite3_step(get_particle) != SQLITE_ROW)
+    if (!exec_stmt(get_particle))
     {
       std::cerr << "Stop iteration at particle " << genparticle_id << std::endl;
       return false;
@@ -99,7 +99,7 @@ namespace SQLamarr
     if (valid_prod && kept) // && prod_vtx != end_vtx)
     {
       sqlite3_stmt* insert_mc_particle = get_statement("insert_mc_particle", R"(
-        INSERT INTO MCParticles (
+        INSERT OR IGNORE INTO MCParticles (
           genparticle_id, 
           genevent_id,
           pid, pe, px, py, pz, m,
@@ -114,7 +114,7 @@ namespace SQLamarr
         WHERE genparticle_id = ?;
       )");
       sqlite3_bind_int(insert_mc_particle, 1, genparticle_id);
-      sqlite3_step(insert_mc_particle);
+      exec_stmt(insert_mc_particle);
 
       const int mcparticle_id = last_insert_row();
 
@@ -134,7 +134,7 @@ namespace SQLamarr
 
       sqlite3_bind_int(set_mc_vertices, 3, mcparticle_id);
 
-      sqlite3_step(set_mc_vertices);
+      exec_stmt(set_mc_vertices);
     }
 
     return traversal_status;
@@ -192,8 +192,8 @@ namespace SQLamarr
     )");
     sqlite3_bind_int (get_end_vertex, 1, genparticle_id);
 
-    sqlite3_step(insert_end_vertex);
-    if (sqlite3_step(get_end_vertex) != SQLITE_ROW)
+    exec_stmt(insert_end_vertex);
+    if (!exec_stmt(get_end_vertex))
       throw std::logic_error("MCParticleSelector failed to insert an end-vertex");
 
     return sqlite3_column_int (get_end_vertex, 0);
