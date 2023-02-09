@@ -11,6 +11,7 @@
 #include "SQLamarr/GenerativePlugin.h"
 #include "SQLamarr/GlobalPRNG.h"
 #include "SQLamarr/TemporaryTable.h"
+#include "SQLamarr/BlockLib/LbParticleId.h"
 #include <memory>
 #include <glob.h>
 
@@ -273,10 +274,10 @@ int main(int argc, char* argv[])
   SQLamarr::TemporaryTable covariance (db,
       "covariance", 
       { "cov00", "cov01", "cov02", "cov03", "cov04", 
-                 "cov11", "cov02", "cov03", "cov04", 
-                          "cov22", "cov03", "cov04", 
-                                   "cov33", "cov04", 
-                                            "cov04" 
+                 "cov11", "cov12", "cov13", "cov14", 
+                          "cov22", "cov23", "cov24", 
+                                   "cov33", "cov34", 
+                                            "cov44" 
       },
       R"(
       WITH shortcut AS (
@@ -288,12 +289,12 @@ int main(int argc, char* argv[])
             sqrt(exp(log_cov_ClosestToBeam_4_4)) AS sig4, 
             corr_ClosestToBeam_0_1               AS cor01,
             corr_ClosestToBeam_0_2               AS cor02,
-            corr_ClosestToBeam_1_2               AS cor03,
-            corr_ClosestToBeam_0_3               AS cor04,
-            corr_ClosestToBeam_1_3               AS cor11,
-            corr_ClosestToBeam_2_3               AS cor12,
-            corr_ClosestToBeam_0_4               AS cor13,
-            corr_ClosestToBeam_1_4               AS cor23,
+            corr_ClosestToBeam_1_2               AS cor12,
+            corr_ClosestToBeam_0_3               AS cor03,
+            corr_ClosestToBeam_1_3               AS cor13,
+            corr_ClosestToBeam_2_3               AS cor23,
+            corr_ClosestToBeam_0_4               AS cor04,
+            corr_ClosestToBeam_1_4               AS cor14,
             corr_ClosestToBeam_2_4               AS cor24,
             corr_ClosestToBeam_3_4               AS cor34
           FROM tmp_covariance_out
@@ -316,6 +317,38 @@ int main(int argc, char* argv[])
         sig4 * sig3
       FROM shortcut;
       )", /*make_persistent*/ true);
+
+  covariance.execute();
+
+  const std::string pidlib = "../temporary_data/models/lhcb.pid.2016MU-sim.so";
+  const std::string particle_table = "MCParticles";
+  const std::string track_table = "tmp_particles_recoed_as";
+
+  std::vector<SQLamarr::GenerativePlugin> pid_algos{
+    SQLamarr::BlockLib::LbParticleId::make (db, pidlib, "pion_pipe", "tmp_pid_pi",
+        particle_table, track_table, 211),
+    SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "kaon_pipe", "tmp_pid_k",
+        particle_table, track_table, 321),
+    SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "proton_pipe", "tmp_pid_p",
+        particle_table, track_table, 2212),
+    SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "muon_pipe", "tmp_pid_mu",
+        particle_table, track_table, 13),
+  };
+  for (auto& pid_algo: pid_algos)
+    pid_algo.execute();
+
+  SQLamarr::TemporaryTable concat_pid(db,
+      "pid",
+      SQLamarr::BlockLib::LbParticleId::get_column_names(),
+      { 
+      "SELECT * FROM tmp_pid_pi",
+      "SELECT * FROM tmp_pid_k",
+      "SELECT * FROM tmp_pid_mu",
+      "SELECT * FROM tmp_pid_p"
+      },
+      /*make_persistent*/ true
+      );
+  concat_pid.execute();
 
 
 

@@ -27,6 +27,7 @@ project(SQLamarr)
       src/Plugin.cpp
       src/GenerativePlugin.cpp
       src/TemporaryTable.cpp
+      src/blib/LbParticleId.cpp
       src/main.cpp
       )
 
