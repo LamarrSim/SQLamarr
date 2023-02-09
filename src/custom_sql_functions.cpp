@@ -133,7 +133,7 @@ void _sqlamarr_sql_pseudorapidity (
   y = sqlite3_value_double(argv[1]);
   z = sqlite3_value_double(argv[2]);
 
-  theta = atan2(x*x + y*y, z);
+  theta = atan2(sqrt(x*x + y*y), z);
   eta = -log(tan(0.5*theta));
 
   sqlite3_result_double(context, eta);
