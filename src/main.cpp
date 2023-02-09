@@ -27,7 +27,8 @@ std::vector<std::string> globVector(const std::string& pattern);
 
 int main(int argc, char* argv[])
 {
-  std::string path{"../temporary_data/HepMC2-ascii/DSt_Pi.hepmc2/evt*.mc2"};
+  std::string path{"../temporary_data/HepMC2-ascii/DSt_Pi.hepmc2/evt0.mc2"};
+  //std::string path{"/pclhcb06/landerli/lamarrgridvalidation-test/HepMCexporter/DSt_Pi.hepmc2/*.mc2"};
 
   std::vector<std::string> file_paths = globVector(path); 
 //  {
@@ -52,7 +53,7 @@ int main(int argc, char* argv[])
   size_t runNumber = 456;
 
   for (std::string& file_path: file_paths)
-    if (evtNumber < 10) 
+    if (evtNumber < 100) 
       loader.load(file_path, runNumber, evtNumber++);
 
   // Runs the PVFinder algorithm
@@ -135,6 +136,50 @@ int main(int argc, char* argv[])
       );
 
   efficiency_model.execute();
+
+  SQLamarr::TemporaryTable debug_eff (db,
+      "debug_eff", 
+      {
+      "mcparticle_id", 
+      "mc_x", "mc_y", "mc_z", "mc_log10_p", "mc_tx", "mc_ty", "mc_eta", "mc_phi", "mc_is_e", "mc_is_mu", "mc_is_h", "mc_charge",
+      "not_recoed", "long", "upstream", "downstream"
+      }, 
+      R"(
+          SELECT 
+              p.mcparticle_id AS mcparticle_id,
+              ov.x AS mc_x, 
+              ov.y AS mc_y, 
+              ov.z AS mc_z,
+              log10(norm2(p.px, p.py, p.pz)) AS mc_log10_p,
+              p.px/p.pz AS mc_tx, 
+              p.py/p.pz AS mc_ty,
+              pseudorapidity(p.px, p.py, p.pz) AS mc_eta,
+              azimuthal(p.px, p.py, p.pz) AS mc_phi,
+              abs(p.pid) == 11 AS mc_is_e,
+              abs(p.pid) == 13 AS mc_is_mu,
+              (
+               abs(p.pid) == 211 OR abs(p.pid) == 321 OR abs(p.pid) == 2212  
+              ) AS mc_is_h,
+              propagation_charge(p.pid) AS mc_charge,
+              --
+              out.not_recoed AS not_recoed,
+              out.long AS long,
+              out.upstream AS upstream,
+              out.downstream AS downstream
+            FROM MCParticles AS p
+            INNER JOIN MCVertices AS ov ON p.production_vertex = ov.mcvertex_id
+            INNER JOIN tmp_efficiency_out AS out ON out.mcparticle_id == p.mcparticle_id
+            WHERE 
+                p.pz > 1.
+              AND
+                propagation_charge(p.pid) <> 0.
+      )",
+    true //make_persistent
+      );
+  debug_eff.execute();
+      
+
+
 
   SQLamarr::TemporaryTable assign_track_cat (db,
       "tmp_particles_recoed_as", {"mcparticle_id", "track_type"},

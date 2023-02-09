@@ -15,7 +15,7 @@ project(SQLamarr)
   include_directories(${SQLite_INCLUDE_DIRS})
   include_directories(${LAMARR_INCLUDE_DIR})
 
-  add_executable(SQLamarr
+  add_executable(hardcoded_pipeline
       src/custom_sql_functions.cpp
       src/db_functions.cpp
       src/BaseSqlInterface.cpp
@@ -31,7 +31,28 @@ project(SQLamarr)
       src/main.cpp
       )
 
-  target_link_libraries(SQLamarr 
+  target_link_libraries(hardcoded_pipeline 
+      m dl
+      ${HEPMC3_LIB} 
+      ${SQLite3_LIBRARIES}
+      )
+
+  add_library(SQLamarr SHARED
+      src/custom_sql_functions.cpp
+      src/db_functions.cpp
+      src/BaseSqlInterface.cpp
+      src/AbsDataLoader.cpp
+      src/HepMC2DataLoader.cpp
+      src/PVFinder.cpp
+      src/PVReconstruction.cpp
+      src/MCParticleSelector.cpp
+      src/Plugin.cpp
+      src/GenerativePlugin.cpp
+      src/TemporaryTable.cpp
+      src/python_bindings.cpp
+      )
+
+  target_link_libraries(SQLamarr
       m dl
       ${HEPMC3_LIB} 
       ${SQLite3_LIBRARIES}

@@ -17,9 +17,9 @@ namespace SQLamarr
       uint64_t evt_number
       )
   {
-    sqlite3_stmt* stmt = get_statement ("insert_datasource",
+    sqlite3_stmt* stmt = get_statement ("insert_event",
         "INSERT INTO DataSources(datasource, run_number, evt_number) "
-        "VALUES (?, ?, ?) "
+        "VALUES (?, ?, ?); "
         );
 
     sqlite3_bind_text (stmt, 1, datasource.data(), datasource.length()+1, SQLITE_TRANSIENT);
@@ -33,7 +33,7 @@ namespace SQLamarr
 
 
   //==========================================================================
-  // insert_event
+  // insert_collision
   //==========================================================================
   int AbsDataLoader::insert_collision (
       int datasource_id,
@@ -44,7 +44,7 @@ namespace SQLamarr
       float z
       )
   {
-    sqlite3_stmt* stmt = get_statement ("insert_event",
+    sqlite3_stmt* stmt = get_statement ("insert_collision",
         "INSERT INTO GenEvents(datasource_id, collision, x, y, z, t) "
         "VALUES (?, ?, ?, ?, ?, ?) "
         );
@@ -131,7 +131,6 @@ namespace SQLamarr
       sqlite3_bind_int(stmt, iVar++, production_vertex);
     else
     {
-      std::cout << "NULL production vertex " << std::endl; 
       sqlite3_bind_null(stmt, iVar++);
     }
 

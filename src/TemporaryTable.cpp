@@ -123,7 +123,7 @@ namespace SQLamarr
     char buffer[128];
     for (auto& stmt: m_select_statements)
     {
-      sprintf(buffer, "inser_in_output_table_%d", c++);
+      sprintf(buffer, "insert_in_output_table_%d", c++);
       exec_stmt(get_statement(buffer, compose_insert_query(stmt).c_str()));
     }
   }
