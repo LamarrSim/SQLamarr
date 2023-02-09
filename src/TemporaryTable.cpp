@@ -10,7 +10,28 @@
 namespace SQLamarr
 {
   //============================================================================
-  // Constructor
+  // Constructor (from list of statements)
+  //============================================================================
+  TemporaryTable::TemporaryTable (
+          SQLite3DB& db,
+          const std::string& output_table,
+          const std::vector<std::string>& columns,
+          const std::vector<std::string>& select_statements,
+          bool make_persistent
+          )
+    : BaseSqlInterface (db)
+    , m_output_table (output_table)
+    , m_columns (columns)
+    , m_select_statements (select_statements)
+    , m_make_persistent (make_persistent)
+  {
+    validate_token (output_table);
+    for (auto& column_name: m_columns)
+      validate_token (column_name);
+  }
+  
+  //============================================================================
+  // Constructor (from a single statement)
   //============================================================================
   TemporaryTable::TemporaryTable (
           SQLite3DB& db,
@@ -22,7 +43,7 @@ namespace SQLamarr
     : BaseSqlInterface (db)
     , m_output_table (output_table)
     , m_columns (columns)
-    , m_select_statement (select_statement)
+    , m_select_statements ({select_statement})
     , m_make_persistent (make_persistent)
   {
     validate_token (output_table);
@@ -65,7 +86,7 @@ namespace SQLamarr
   //============================================================================
   // compose_create_query. Internal.
   //============================================================================
-  std::string TemporaryTable::compose_insert_query() const
+  std::string TemporaryTable::compose_insert_query(const std::string& st) const
   {
     std::stringstream s;
     s << "INSERT INTO " << m_output_table << " (";
@@ -74,13 +95,13 @@ namespace SQLamarr
       s << c << (c != m_columns.back() ? ", ": "");
     s << ") ";
 
-    s << m_select_statement;
+    s << st;
 
     return s.str();
   }
 
   //============================================================================
-  // Constructor
+  // Execute
   //============================================================================
   void TemporaryTable::execute ()
   {
@@ -98,9 +119,12 @@ namespace SQLamarr
     exec_stmt(delete_output_table);
 
     // INSERT INTO TABLE
-    sqlite3_stmt* insert_in_output_table = get_statement(
-        "insert_in_output_table", compose_insert_query().c_str()
-        );
-    exec_stmt(insert_in_output_table);
+    int c = 0;
+    char buffer[128];
+    for (auto& stmt: m_select_statements)
+    {
+      sprintf(buffer, "inser_in_output_table_%d", c++);
+      exec_stmt(get_statement(buffer, compose_insert_query(stmt).c_str()));
+    }
   }
 }

@@ -52,8 +52,24 @@ namespace SQLamarr
             ///< Name of the output table
           const std::vector<std::string>& columns,
             ///< List of the names assigned to the output columns
+          const std::vector<std::string>& select_statements,
+            ///< A list of SQL SELECT statements selecting exactly the same 
+            ///  number of variables as defined by the column argument
+          bool make_persistent = false
+            ///< Override the temporary configuration to make 
+            //   the table "persistent"
+          );
+     
+      /// Define the operations to define to create the temp table
+      TemporaryTable (
+          SQLite3DB& db,
+            ///< Reference to the database
+          const std::string& output_table,
+            ///< Name of the output table
+          const std::vector<std::string>& columns,
+            ///< List of the names assigned to the output columns
           const std::string& select_statement,
-            ///< An SQL SELECT statement selecting exactly the same 
+            ///< A SQL SELECT statements selecting exactly the same 
             ///  number of variables as defined by the column argument
           bool make_persistent = false
             ///< Override the temporary configuration to make 
@@ -72,12 +88,12 @@ namespace SQLamarr
       const std::vector<std::string> m_columns;
 
       // Select statement
-      const std::string m_select_statement;
+      const std::vector<std::string> m_select_statements;
 
     private: 
       std::string compose_create_query() const;
       std::string compose_delete_query() const;
-      std::string compose_insert_query() const;
+      std::string compose_insert_query(const std::string& st) const;
       bool m_make_persistent;
   };
 }
