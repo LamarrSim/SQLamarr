@@ -1,0 +1,13 @@
+- name: Doxygen GitHub Pages Deploy Action
+  # You may pin to the exact commit or the version.
+  # uses: DenverCoder1/doxygen-github-pages-action@a1ff6f448643817bf4c71be547b8ee3e3ca11d22
+  uses: DenverCoder1/doxygen-github-pages-action@v1.2.0
+  with:
+    # A GitHub token for pushing to the repo. Example: https://git.io/passing-token
+    github_token: 
+    # Branch name for pushing GitHub pages files
+    branch: # default is gh-pages
+    # Folder where Doxygen will generate the HTML build files
+    folder: # default is docs/html
+    # Path of the Doxygen configuration file
+    config_file: # default is Doxyfile
