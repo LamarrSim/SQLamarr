@@ -184,7 +184,7 @@ namespace SQLamarr
       eval_parametrization(output.data(), input.data());
 
       // Fill the output table with the parametrization output
-      for (int iOutput = 0; iOutput < m_outputs.size(); ++iOutput)
+      for (size_t iOutput = 0; iOutput < m_outputs.size(); ++iOutput)
         sqlite3_bind_double(
             insert_in_output_table, 
             m_refkeys.size() + iOutput + 1, 

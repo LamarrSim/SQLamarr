@@ -81,7 +81,7 @@ namespace SQLamarr
       /// Return a pointer to an initialized generator
       static PRNG* get_or_create (
           const sqlite3_context* db, 
-          int64_t seed = no_seed
+          uint64_t seed = no_seed
           )
       {
         sqlite3_context* db_ = const_cast<sqlite3_context*> (db);
@@ -92,7 +92,7 @@ namespace SQLamarr
       /// Return a pointer to an initialized generator
       static PRNG* get_or_create (
           const sqlite3* db, 
-          int64_t seed = no_seed
+          uint64_t seed = no_seed
           )
       {
         // Gets the singleton handle

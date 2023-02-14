@@ -79,7 +79,7 @@ void _sqlamarr_sql_norm2 (
     buf = sqlite3_value_double(argv[iPar]);
     res += buf*buf;
   }
-  res = sqrt(buf);
+  res = sqrt(res);
 
   sqlite3_result_double(context, res);
 }
@@ -148,7 +148,7 @@ void _sqlamarr_sql_azimuthal (
     sqlite3_value **argv
     )
 {
-  double x, y, z;
+  double x, y/*, z*/;
 
   if (argc != 3)
   {
@@ -158,7 +158,9 @@ void _sqlamarr_sql_azimuthal (
 
   x = sqlite3_value_double(argv[0]);
   y = sqlite3_value_double(argv[1]);
+  /* z is unused but it is expected for interface consistency 
   z = sqlite3_value_double(argv[2]);
+  */
 
   sqlite3_result_double(context, atan2(y, x));
 }
@@ -268,7 +270,6 @@ void _sqlamarr_sql_random_category (
   float r = uniform(*generator);
   int iArg;
   int ret = argc;
-  float buf;
 
   // Check probability is non-negative
   for (iArg = 0; iArg < argc; ++iArg)

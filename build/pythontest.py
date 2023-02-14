@@ -2,6 +2,7 @@ import sys
 sys.path.append("../python")
 
 import SQLamarr
+print (SQLamarr.version)
 
 import os
 filename = "pytmp.db"

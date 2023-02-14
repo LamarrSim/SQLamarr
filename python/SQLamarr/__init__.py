@@ -1,7 +1,34 @@
 import ctypes
+import glob
+import os
+
+cwd = os.path.dirname(__file__)
 
 # Load the C++ library with bindings
-clib = ctypes.CDLL("libSQLamarr.so")
+resolution_attempts = (
+    glob.glob(os.path.join(cwd, "libSQLamarr.*.so")) + 
+    [
+      "libSQLamarr.so",
+      os.path.join(cwd, "libSQLamarr.so"),
+      ]
+    )
+
+
+
+clib = None
+for resolution_attempt in resolution_attempts:
+  try:
+    clib = ctypes.CDLL(resolution_attempt)
+  except OSError:
+    continue 
+  else:
+    break 
+
+if clib is None:
+  raise OSError("Failed loading libSQLamarr.so")
+
+clib.get_version.restype = ctypes.c_char_p
+version = str(clib.get_version(), "ascii")
 
 ## Database 
 from SQLamarr.db_functions import SQLite3DB

@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "python"}
+packages = ["SQLamarr"]
+
+
+
+[project]
+name = "SQLamarr"
+description = "The stand-alone ultra-fast simulation option for LHCb"
+readme = "README.md"
+
+authors = [
+  {name = "Lucio Anderlini", email = "Lucio.Anderlini@fi.infn.it"},
+  {name = "Matteo Barbetti", email = "Matteo.Barbetti@fi.infn.it"},
+  ]
+
+license = {text = "GPL-3"}
+
+keywords = ["lhcb", "fast-simulation", "simulation", "hep", "physics"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: SQL",
+    "Programming Language :: C++",
+    "Operating System :: POSIX :: Linux",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Environment :: Console",
+  ]
+
+
+dynamic = ["version"]
+
+dependencies = ["hepmc3"]
+
+
+[tool.setuptools.dynamic]
+version = {attr = "__version__.version"}
+

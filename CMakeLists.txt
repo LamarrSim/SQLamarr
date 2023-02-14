@@ -28,6 +28,7 @@ project(SQLamarr)
       src/GenerativePlugin.cpp
       src/TemporaryTable.cpp
       src/CleanEventStore.cpp
+      src/version.cpp
       src/blib/LbParticleId.cpp
       src/main.cpp
       )
@@ -47,6 +48,7 @@ project(SQLamarr)
       src/PVFinder.cpp
       src/PVReconstruction.cpp
       src/MCParticleSelector.cpp
+      src/version.cpp
       src/Plugin.cpp
       src/GenerativePlugin.cpp
       src/TemporaryTable.cpp
