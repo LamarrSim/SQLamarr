@@ -33,7 +33,7 @@ class SQLite3DB:
           "Cannot connect to an in-memory database without cache sharing"
           )
 
-    with sqlite3.connect(self._path) as db:
+    with sqlite3.connect(self._path, uri=True) as db:
       yield db
 
 

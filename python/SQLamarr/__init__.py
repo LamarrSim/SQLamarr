@@ -16,6 +16,7 @@ from SQLamarr.PVReconstruction import PVReconstruction
 from SQLamarr.Plugin import Plugin
 from SQLamarr.GenerativePlugin import GenerativePlugin
 from SQLamarr.TemporaryTable import TemporaryTable
+from SQLamarr.CleanEventStore import CleanEventStore
 
 ## Python Transfomer
 from SQLamarr.PyTransformer import PyTransformer

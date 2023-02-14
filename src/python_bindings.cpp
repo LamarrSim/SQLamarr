@@ -10,7 +10,7 @@
 #include "SQLamarr/GenerativePlugin.h"
 #include "SQLamarr/GlobalPRNG.h"
 #include "SQLamarr/TemporaryTable.h"
-#include "SQLamarr/BlockLib/LbParticleId.h"
+#include "SQLamarr/CleanEventStore.h"
 
 using SQLamarr::SQLite3DB;
 
@@ -226,6 +226,24 @@ void del_TemporaryTable (void *self)
 {
   delete reinterpret_cast<SQLamarr::TemporaryTable*>(self);
 }
+
+
+//==============================================================================
+// CleanEventStore
+//==============================================================================
+extern "C"
+void *new_CleanEventStore (void *db)
+{
+  SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
+  return reinterpret_cast<void *> (new SQLamarr::CleanEventStore(*udb));
+}
+
+extern "C"
+void del_CleanEventStore (void *self)
+{
+  delete reinterpret_cast<SQLamarr::CleanEventStore*>(self);
+}
+
 
 //==============================================================================
 // Execute Pipeline

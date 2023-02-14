@@ -68,17 +68,26 @@ namespace SQLamarr
   //==========================================================================
   // make_database
   //==========================================================================
-  SQLite3DB make_database (std::string filename)
+  SQLite3DB make_database (std::string filename, int flags, std::string init)
   {
     sqlite3* db;
     char *zErrMsg;
     int retcode;
 
-    retcode = sqlite3_open(filename.c_str(), &db);
-    if (retcode) 
-      throw std::logic_error("Failed to instantiate SQLite3 DB");
+    if (init == "")
+      init = SQL_CREATE_SCHEMA;
 
-    retcode = sqlite3_exec(db, SQL_CREATE_SCHEMA, nullptr, nullptr, &zErrMsg);
+    retcode = sqlite3_open_v2(filename.c_str(), &db, flags, nullptr);
+    if (retcode) 
+    {
+      std::cerr << "Failure while initializing " << filename << ": "
+        << sqlite3_errmsg(db)
+        << std::endl;
+     
+      throw std::logic_error("Failed to instantiate SQLite3 DB");
+    }
+
+    retcode = sqlite3_exec(db, init.c_str(), nullptr, nullptr, &zErrMsg);
     if (retcode)
     {
       std::cerr << sqlite3_errmsg(db) << std::endl;
