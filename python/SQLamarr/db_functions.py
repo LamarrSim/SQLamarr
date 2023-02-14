@@ -13,7 +13,7 @@ clib.GlobalPRNG_get_or_create.argtypes = (ctypes.c_void_p, ctypes.c_int)
 
 
 class SQLite3DB:
-  def __init__ (self, path: str = ":memory:"):
+  def __init__ (self, path: str = "file::memory:?cache=shared"):
     self._path = path
     self._pointer = clib.make_database(path.encode('ascii'))
   
@@ -29,7 +29,9 @@ class SQLite3DB:
   @contextlib.contextmanager
   def connect(self):
     if self._path == ":memory:":
-      raise NotImplementedError("Cannot connect to a inmemory database")
+      raise NotImplementedError(
+          "Cannot connect to an in-memory database without cache sharing"
+          )
 
     with sqlite3.connect(self._path) as db:
       yield db

@@ -12,6 +12,7 @@
 #include "SQLamarr/GlobalPRNG.h"
 #include "SQLamarr/TemporaryTable.h"
 #include "SQLamarr/BlockLib/LbParticleId.h"
+#include "SQLamarr/CleanEventStore.h"
 #include <memory>
 #include <glob.h>
 
@@ -394,6 +395,9 @@ int main(int argc, char* argv[])
       /*make_persistent*/ true
       );
   concat_pid.execute();
+
+  SQLamarr::CleanEventStore clean(db);
+  //clean.execute();
 
 
 

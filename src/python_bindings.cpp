@@ -1,3 +1,4 @@
+#include <string.h>
 #include <memory>
 #include <iostream>
 #include "SQLamarr/HepMC2DataLoader.h"
@@ -12,6 +13,8 @@
 #include "SQLamarr/BlockLib/LbParticleId.h"
 
 using SQLamarr::SQLite3DB;
+
+std::vector<std::string> tokenize (const char*);
 
 //==============================================================================
 // make_database
@@ -130,6 +133,99 @@ void del_PVReconstruction (void *self)
   delete reinterpret_cast<SQLamarr::PVReconstruction*>(self);
 }
 
+//==============================================================================
+// Plugin
+//==============================================================================
+extern "C"
+void *new_Plugin (
+    void *db,
+    const char* library_path,
+    const char* function_name,
+    const char* query,
+    const char* output_table,
+    const char* comma_separated_outputs,
+    const char* comma_separated_references
+    )
+{
+  SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
+
+  return reinterpret_cast<void *> (new SQLamarr::Plugin(*udb,
+        library_path,
+        function_name,
+        query,
+        output_table,
+        tokenize(comma_separated_outputs),
+        tokenize(comma_separated_references)
+        ));
+}
+
+extern "C"
+void del_Plugin (void *self)
+{
+  delete reinterpret_cast<SQLamarr::Plugin*>(self);
+}
+
+//==============================================================================
+// GenerativePlugin
+//==============================================================================
+extern "C"
+void *new_GenerativePlugin (
+    void *db,
+    const char* library_path,
+    const char* function_name,
+    const char* query,
+    const char* output_table,
+    const char* comma_separated_outputs,
+    int n_random,
+    const char* comma_separated_references
+    )
+{
+  SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
+
+  return reinterpret_cast<void *> (new SQLamarr::GenerativePlugin(*udb,
+        library_path,
+        function_name,
+        query,
+        output_table,
+        tokenize(comma_separated_outputs),
+        n_random,
+        tokenize(comma_separated_references)
+        ));
+}
+
+extern "C"
+void del_GenerativePlugin (void *self)
+{
+  delete reinterpret_cast<SQLamarr::GenerativePlugin*>(self);
+}
+
+//==============================================================================
+// TemporaryTable
+//==============================================================================
+extern "C"
+void *new_TemporaryTable (
+    void *db,
+    const char* output_table,
+    const char* comma_separated_outputs,
+    const char* query,
+    bool make_persistent
+    )
+{
+  SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
+
+  return reinterpret_cast<void *> (new SQLamarr::TemporaryTable(*udb,
+        output_table,
+        tokenize(comma_separated_outputs),
+        query,
+        make_persistent
+        ));
+}
+
+extern "C"
+void del_TemporaryTable (void *self)
+{
+  delete reinterpret_cast<SQLamarr::TemporaryTable*>(self);
+}
 
 //==============================================================================
 // Execute Pipeline
@@ -143,4 +239,30 @@ void execute_pipeline(int algc, void** algv)
     reinterpret_cast<SQLamarr::Transformer*> (algv[iAlg])->execute();
 }
 
-  
+
+//==============================================================================
+// Additional functions
+//==============================================================================
+std::vector<std::string> tokenize (const char* input_str)
+{
+  // Return buffer
+  std::vector<std::string> ret;
+
+  // Copy the input string in a writable buffer
+  char buf[1024];
+  strcpy(buf, input_str);
+
+  // Tokenize the string
+  char *token = strtok(buf, ",");
+
+  while (token != NULL)
+  {
+    ret.push_back(token);
+    token = strtok(NULL, ",");
+  }
+
+  // Return buffer
+  return ret;
+}
+
+

@@ -11,9 +11,26 @@ class Pipeline:
   def __init__(self, algoritms: List[Any]):
     self._algorithms = algoritms
 
+  @staticmethod
+  def _exec_chunk (chunk):
+    ArrayOfAlgos = ctypes.c_void_p * len(chunk)
+    buf = ArrayOfAlgos(*chunk)
+    clib.execute_pipeline (len(chunk), buf)
+
   def execute(self):
-    ArrayOfAlgos = ctypes.c_void_p * len(self._algorithms)
-    buf = ArrayOfAlgos(*[a.raw_pointer for a in self._algorithms])
-    clib.execute_pipeline (len(self._algorithms), buf)
+    chunk = []
+    for alg in self._algorithms:
+      if hasattr(alg, '__call__'):
+        self._exec_chunk(chunk)
+        chunk = []
+        alg()
+      elif hasattr(alg, 'raw_pointer'):
+        chunk.append(alg.raw_pointer)
+      else:
+        raise TypeError(
+            f"Unexpected algorithm {alg} ({alg.__class__.__name__})"
+            )
+
+    self._exec_chunk(chunk)
 
 
