@@ -8,8 +8,6 @@
 # or submit itself to any jurisdiction.
 
 import ctypes
-import glob
-import os
 
 ## Load the C++ library
 from SQLamarr._find_CDLL import _find_CDLL
