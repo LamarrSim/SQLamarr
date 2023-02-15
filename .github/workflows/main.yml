@@ -25,6 +25,6 @@ jobs:
      - name: 'Deploy GitHub Pages site'
        uses: actions/deploy-pages@v1.2.4
        with:
-         emit_telemetry: false 
+         emit_telemetry: true
          artifact_name: docs-html
           
