@@ -1,3 +1,4 @@
+[![GitHub address](https://badgen.net/badge/icon/repository?icon=github&label)](https://github.com/lamarrsim/SQLamarr)
 [![Doxygen on Pages](https://github.com/LamarrSim/SQLamarr/actions/workflows/main.yml/badge.svg)](https://lamarrsim.github.io/SQLamarr)
 
 # SQLamarr
