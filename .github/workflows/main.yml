@@ -17,14 +17,11 @@ jobs:
      - name: Setup Pages
        uses: actions/configure-pages@v3
      - name: 'Upload html'
-       uses: actions/upload-artifact@v3
+       uses: actions/upload-pages-artifact@v1
        with:
          name: docs-html
          path: docs/*.html
          retention-days: 1
      - name: 'Deploy GitHub Pages site'
-       uses: actions/deploy-pages@v1.2.4
-       with:
-         emit_telemetry: true
-         artifact_name: docs-html
+       uses: actions/deploy-pages@v1
           
