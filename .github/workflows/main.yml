@@ -1,0 +1,21 @@
+name: Doxygen GitHub Pages Deploy Action
+on: [push]
+jobs:
+  update-docs:
+    runs-on: alpine:latest
+    steps:
+     - uses: actions/checkout@v3
+     - run: apt-get install doxygen
+     - run: doxygen
+     - name: 'Upload html'
+       uses: actions/upload-artifact@v3
+       with:
+         name: docs-html
+         path: docs/*.html
+         retention-days: 1
+     - name: 'Deploy GitHub Pages site'
+       uses: actions/deploy-pages@v1.2.4
+       with:
+         emit_telemetry: false 
+         artifact_name: docs-html
+          
