@@ -1,6 +1,8 @@
 [![GitHub address](https://badgen.net/badge/icon/repository?icon=github&label)](https://github.com/lamarrsim/SQLamarr)
 [![Doxygen on Pages](https://github.com/LamarrSim/SQLamarr/actions/workflows/main.yml/badge.svg)](https://lamarrsim.github.io/SQLamarr)
 
+![Lamarr logo](https://avatars.githubusercontent.com/u/125392434?s=200&v=4)
+
 # SQLamarr
 *The stand-alone ultra-fast simulation option for LHCb*
 
