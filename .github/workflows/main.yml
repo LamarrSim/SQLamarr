@@ -5,8 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
      - uses: actions/checkout@v3
-     - sudo: required
-       run: apt-get install doxygen
+     - run: sudo apt-get install doxygen
      - run: doxygen
      - name: 'Upload html'
        uses: actions/upload-artifact@v3
