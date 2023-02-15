@@ -6,10 +6,11 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization  
 # or submit itself to any jurisdiction.
-
 import ctypes
 from ctypes import POINTER 
 from SQLamarr import clib
+
+from SQLamarr.db_functions import SQLite3DB
 
 clib.new_CleanEventStore.argtypes = (ctypes.c_void_p,)
 clib.new_CleanEventStore.restype = ctypes.c_void_p
@@ -17,14 +18,26 @@ clib.new_CleanEventStore.restype = ctypes.c_void_p
 clib.del_CleanEventStore.argtypes = (ctypes.c_void_p,)
 
 class CleanEventStore:
-  def __init__ (self, db):
+  """
+  Delete all rows from all tables without affecting the schema.
+
+  Refer to SQLamarr::CleanEventStore for implementation details.
+  """
+  def __init__ (self, db: SQLite3DB):
+    """
+    Configure a Transformer to clean the Database without modifying the schema
+
+    @param db: An open database connection.
+    """
     self._self = clib.new_CleanEventStore(db.get())
   
   def __del__(self):
+    """@private: Release the bound class instance"""
     clib.del_CleanEventStore(self._self)
 
   @property
   def raw_pointer(self):
+    """@private: Return the raw pointer to the algorithm."""
     return self._self
 
 

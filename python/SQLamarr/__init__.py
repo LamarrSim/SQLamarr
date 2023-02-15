@@ -1,32 +1,21 @@
+# (c) Copyright 2022 CERN for the benefit of the LHCb Collaboration. 
+#                                                                             
+# This software is distributed under the terms of the GNU General Public
+# Licence version 3 (GPL Version 3), copied verbatim in the file "LICENCE".
+#                                                                             
+# In applying this licence, CERN does not waive the privileges and immunities
+# granted to it by virtue of its status as an Intergovernmental Organization  
+# or submit itself to any jurisdiction.
+
 import ctypes
 import glob
 import os
 
-cwd = os.path.dirname(__file__)
+## Load the C++ library
+from SQLamarr._find_CDLL import _find_CDLL
+clib = _find_CDLL()
 
-# Load the C++ library with bindings
-resolution_attempts = (
-    glob.glob(os.path.join(cwd, "libSQLamarr.*.so")) + 
-    [
-      "libSQLamarr.so",
-      os.path.join(cwd, "libSQLamarr.so"),
-      ]
-    )
-
-
-
-clib = None
-for resolution_attempt in resolution_attempts:
-  try:
-    clib = ctypes.CDLL(resolution_attempt)
-  except OSError:
-    continue 
-  else:
-    break 
-
-if clib is None:
-  raise OSError("Failed loading libSQLamarr.so")
-
+## Setup the version of the python package by reading the version of the CDLL
 clib.get_version.restype = ctypes.c_char_p
 version = str(clib.get_version(), "ascii")
 
