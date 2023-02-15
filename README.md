@@ -1,3 +1,5 @@
+[![Doxygen on Pages](https://github.com/LamarrSim/SQLamarr/actions/workflows/main.yml/badge.svg)](https://lamarrsim.github.io/SQLamarr)
+
 # SQLamarr
 *The stand-alone ultra-fast simulation option for LHCb*
 
