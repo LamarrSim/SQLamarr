@@ -35,11 +35,10 @@ classifiers = [
   ]
 
 
-dynamic = ["version"]
+version = "0.0c2"
 
 dependencies = ["hepmc3"]
 
-
-[tool.setuptools.dynamic]
-version = {attr = "__version__.version"}
+[tool.setuptools.package-data]
+myModule = ["*.h"]
 

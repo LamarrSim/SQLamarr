@@ -1,5 +1,5 @@
 // STL
-#include <string_view>
+#include <string>
 #include <unordered_map>
 #include <memory>
 
@@ -58,7 +58,7 @@ namespace SQLamarr
       /// Load an event (possibly including multiple `GenEvent`s) from an ASCII
       /// file, as produced by the HepMC2 `IO_GenEvent` class. 
       void load (
-          std::string_view file_path, ///< Full path to the ASCII file
+          const std::string& file_path, ///< Full path to the ASCII file
           size_t run_number,          ///< Unique identifier of the run 
           size_t evt_number           ///< Unique identifier of the event 
           );

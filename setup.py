@@ -7,6 +7,7 @@ ext = Extension(
     include_dirs=["."],
     language="c++" ,
     libraries=["m", "dl", "HepMC3", "sqlite3"],
+    extra_compile_args=["-std=c++11"],
     )
 
 setup(ext_modules=[ext])

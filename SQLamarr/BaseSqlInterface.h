@@ -41,7 +41,7 @@ namespace SQLamarr
       sqlite3_stmt* get_statement (
           const std::string& name,      ///< Human-readable uid of the query
                                         ///  used as key in a hash table
-          const std::string_view query  ///< SQL query used to initialize the 
+          const std::string& query      ///< SQL query used to initialize the 
                                         ///  in case it is not present in cache
           );
 

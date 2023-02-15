@@ -28,7 +28,7 @@ namespace SQLamarr
   //==========================================================================
   sqlite3_stmt* BaseSqlInterface::get_statement (
       const std::string& name, 
-      const std::string_view query
+      const std::string& query
       )
   {
     if (m_queries.find(name) == m_queries.end())

@@ -105,12 +105,12 @@ namespace SQLamarr
   //==========================================================================
   // prepare_statement
   //==========================================================================
-  sqlite3_stmt* prepare_statement (SQLite3DB& db, const std::string_view query)
+  sqlite3_stmt* prepare_statement (SQLite3DB& db, const std::string& query)
   {
     sqlite3_stmt* stmt;
 
     int retcode = sqlite3_prepare_v2(
-        db.get(), query.data(), -1, &stmt, nullptr
+        db.get(), query.c_str(), -1, &stmt, nullptr
         );
 
     if (retcode != SQLITE_OK)
@@ -125,12 +125,12 @@ namespace SQLamarr
   //==========================================================================
   // dump_table
   //==========================================================================
-  std::string dump_table(SQLite3DB& db, std::string_view query)
+  std::string dump_table(SQLite3DB& db, const std::string& query)
   {
     std::stringstream ret;
     constexpr char SEPARATOR[] = "  ";
 
-    sqlite3_stmt* stmt = prepare_statement(db, query.data());
+    sqlite3_stmt* stmt = prepare_statement(db, query.c_str());
 
     bool first_row = true;
     while (sqlite3_step(stmt) == SQLITE_ROW)

@@ -12,7 +12,7 @@ namespace SQLamarr
   // insert_event
   //==========================================================================
   int AbsDataLoader::insert_event (
-      std::string_view datasource,
+      const std::string& datasource,
       uint64_t run_number,
       uint64_t evt_number
       )
@@ -22,7 +22,7 @@ namespace SQLamarr
         "VALUES (?, ?, ?); "
         );
 
-    sqlite3_bind_text (stmt, 1, datasource.data(), datasource.length()+1, SQLITE_TRANSIENT);
+    sqlite3_bind_text (stmt, 1, datasource.c_str(), datasource.length()+1, SQLITE_TRANSIENT);
     sqlite3_bind_int64(stmt, 2, run_number);
     sqlite3_bind_int64(stmt, 3, evt_number);
 

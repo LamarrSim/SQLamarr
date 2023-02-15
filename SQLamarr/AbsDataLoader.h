@@ -1,5 +1,4 @@
 // STL
-#include <string_view>
 #include <memory>
 
 // HepMC3
@@ -51,7 +50,7 @@ namespace SQLamarr
       /// Insert data source reference in the `DataSources` table
       int insert_event (
           /// Unique identifer of the data source, e.g. a file path 
-          std::string_view data_source,
+          const std::string& data_source,
 
           /// Unique identifier of the run
           uint64_t run_number,

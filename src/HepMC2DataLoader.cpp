@@ -13,7 +13,7 @@ namespace SQLamarr
   // load
   //==========================================================================
   void HepMC2DataLoader::load (
-      std::string_view file_path, 
+      const std::string& file_path, 
       size_t run_number, 
       size_t evt_number
       )
@@ -21,7 +21,7 @@ namespace SQLamarr
     begin_transaction();
     const int ds_id = insert_event(file_path, run_number, evt_number);
 
-    HepMC3::ReaderAsciiHepMC2 reader(file_path.data());
+    HepMC3::ReaderAsciiHepMC2 reader(file_path.c_str());
     while ( !reader.failed() ) 
     {
       HepMC3::GenEvent evt(HepMC3::Units::MEV, HepMC3::Units::MM);

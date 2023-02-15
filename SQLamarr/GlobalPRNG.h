@@ -22,7 +22,7 @@ namespace SQLamarr
 
   A further complication arises from multithreaded applications 
   with multiple threads sharing a single Pseudo-Random Number 
-  Generator (PNRG). Indeed, the order with which threads may
+  Generator (PRNG). Indeed, the order with which threads may
   advance the sequence of pseudo-random numbers is defined by 
   the order of execution of threads which is, by nature, 
   stocastic. 
@@ -35,7 +35,7 @@ namespace SQLamarr
   gets associated to a different random number generator, seeded 
   indepedently (for example based on the number of threads).
 
-  From a technical perspective, a Singleton GlobalPNRG class 
+  From a technical perspective, a Singleton GlobalPRNG class 
   handles a hash table associating a random number generator 
   to each known database instance. 
 
@@ -55,7 +55,7 @@ namespace SQLamarr
   generator interface can be used to specialize the template 
   class `T_GlobalPRNG` defining the behaviour described above.
 
-  The default `GlobalPNRG` specialization uses a RANLUX 
+  The default `GlobalPRNG` specialization uses a RANLUX 
   with 48 bit generator as
   [provided](https://cplusplus.com/reference/random/ranlux48/) 
   by the C++ STL.
@@ -123,14 +123,14 @@ namespace SQLamarr
           throw std::logic_error("Random seeding disabled.");
 #endif
           std::random_device seeder;
-          h.m_generators[db] = std::make_unique<PRNG>(seeder());
+          h.m_generators[db] = std::unique_ptr<PRNG>(new PRNG(seeder()));
           return h.m_generators[db].get();
         }
 
         //  - if a seed is provided, create a new generator
-        h.m_generators[db] = std::make_unique<PRNG>(
+        h.m_generators[db] = std::unique_ptr<PRNG>(new PRNG(
             static_cast<uint32_t>(0xFFFFFFFFL & seed)
-            );
+            ));
 
         return h.m_generators[db].get();
       }

@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <string_view>
 #include "sqlite3.h"
 
 namespace SQLamarr
@@ -17,10 +16,10 @@ namespace SQLamarr
       );
 
   /// Prpare a statement
-  sqlite3_stmt* prepare_statement (SQLite3DB& db, const std::string_view query);
+  sqlite3_stmt* prepare_statement (SQLite3DB& db, const std::string& query);
 
   /// Dump the result of a query to a string
-  std::string dump_table(SQLite3DB& db, std::string_view query);
+  std::string dump_table(SQLite3DB& db, const std::string& query);
 
   /// Read a column field from a sqlite3 statement and convert it to float
   float read_as_float(sqlite3_stmt*, int);
