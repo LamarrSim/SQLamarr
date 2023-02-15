@@ -1,5 +1,12 @@
 name: Doxygen GitHub Pages Deploy Action
+
 on: [push]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   update-docs:
     runs-on: ubuntu-latest
