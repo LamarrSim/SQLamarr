@@ -44,10 +44,14 @@ classifiers = [
   ]
 
 
-version = "0.0c2"
+version = "0.0c4"
 
 dependencies = ["hepmc3"]
 
 [tool.setuptools.package-data]
 myModule = ["*.h"]
 
+
+[project.urls]
+"Homepage" = "https://lamarrsim.github.io/SQLamarr/"
+"Source" = "https://github.com/LamarrSim/SQLamarr"
