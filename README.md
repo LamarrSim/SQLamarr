@@ -17,7 +17,7 @@ transforming generator-level quantities to reconstructed, analysis-level
 features. 
 Most of the parametrizations are defined using *machine-learning*, and 
 in particular Deep Neural Networks and Gradient Boosted Decision Trees,
-with a traing procedure defined in independent packages (*e.g.* 
+with a training procedure defined in independent packages (*e.g.* 
 [landerlini/lb-trksim-train](https://github.com/landerlini/lb-trksim-train)
 and [mbarbetti/lb-pidsim-train](https://github.com/mbarbetti/lb-pidsim-train)).
 
