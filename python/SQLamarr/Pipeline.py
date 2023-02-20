@@ -17,16 +17,36 @@ from typing import List, Any
 clib.execute_pipeline.argtypes = (ctypes.c_int, POINTER(ctypes.c_void_p))
 
 class Pipeline:
+  """
+  The `Pipeline` object defines the envelop for running C++ transformers from
+  Python. 
+  
+  One or multiple algorithms can be enqueed at construction time and executed 
+  by calling the method `execute()`.
+
+  C++-bounded transformer and `PyTransformer`s can be mixed up in the pipeline,
+  however note that passing the control from a C++ algorithm to another C++
+  algorithm has a much less overhead than passing the control to or from a
+  Python algorithm. 
+  
+  Hence, if logically possible, one should avoid interleaving C++ and Python
+  algorithms.
+  """
   def __init__(self, algoritms: List[Any]):
+    """
+    Acquire the list of algorithms
+    """
     self._algorithms = algoritms
 
   @staticmethod
   def _exec_chunk (chunk):
+    """@private Execute a sequence of C++-only transformers"""
     ArrayOfAlgos = ctypes.c_void_p * len(chunk)
     buf = ArrayOfAlgos(*chunk)
     clib.execute_pipeline (len(chunk), buf)
 
   def execute(self):
+    """Execute the list of algorithms"""
     chunk = []
     for alg in self._algorithms:
       if hasattr(alg, '__call__'):

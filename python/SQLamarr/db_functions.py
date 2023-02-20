@@ -31,7 +31,7 @@ class SQLite3DB:
         Open the connection for the C++ application, with shared cache to ease 
         access from Python to the same tables.
 
-        @param path: path-like or URL identifying the target resource; by 
+        @param path: path-like or URI identifying the target resource; by 
           default, an non-threadsafe connection to an in-memory database is opened.
 
         ### Examples

@@ -11,20 +11,34 @@ import ctypes
 from ctypes import POINTER 
 from SQLamarr import clib
 
+from SQLamarr.db_functions import SQLite3DB
+
 clib.new_PVFinder.argtypes = (ctypes.c_void_p, ctypes.c_int)
 clib.new_PVFinder.restype = ctypes.c_void_p
 
 clib.del_PVFinder.argtypes = (ctypes.c_void_p,)
 
 class PVFinder:
-  def __init__ (self, db, signal_status_code=889):
+  """Identify the primary vertex of each GenEvent (collision process)
+
+  Python binding of `SQLamarr::PVFinder`.
+  """
+  def __init__ (self, db: SQLite3DB, signal_status_code: int = 889):
+    """
+    Acquires the reference to an open connection to the DB.
+
+    @param db: SQLite3DB reference to an open connection
+    @param signal_status_code: HepMC status code identifying a signal canidate
+    """
     self._self = clib.new_PVFinder(db.get(), signal_status_code)
   
   def __del__(self):
+    """@private: Release the bound class instance"""
     clib.del_PVFinder(self._self)
 
   @property
   def raw_pointer(self):
+    """@private: Return the raw pointer to the algorithm."""
     return self._self
 
 

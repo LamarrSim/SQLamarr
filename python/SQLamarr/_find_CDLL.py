@@ -38,6 +38,7 @@ def _find_CDLL():
     else:
       break 
 
+  ## Failing all the attempts, results in raising libSQLamarr
   if clib is None:
     raise OSError("Failed loading libSQLamarr.so")
 

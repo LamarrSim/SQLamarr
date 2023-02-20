@@ -12,6 +12,8 @@ from ctypes import POINTER
 from SQLamarr import clib
 from typing import List
 
+from SQLamarr.db_functions import SQLite3DB
+
 clib.new_TemporaryTable.argtypes = (
     ctypes.c_void_p,        # void *db,
     ctypes.c_char_p,        # const char* output_table,
@@ -25,14 +27,29 @@ clib.new_TemporaryTable.restype = ctypes.c_void_p
 clib.del_TemporaryTable.argtypes = (ctypes.c_void_p,)
 
 class TemporaryTable:
+  """Creates a temporary table from an SQL query. Persitency can be enabled.
+
+  Python binding of `SQLamarr::TemporaryTable`.
+  """
+
   def __init__ (
       self, 
-      db,
+      db: SQLite3DB,
       output_table: str,
       outputs: str,
       query: str,
-      make_persistent: bool,
+      make_persistent: bool = False,
       ):
+    """
+    Acquires the reference to an open connection to the DB and configure the
+    Transformer.
+
+    @param db: An open database connection;
+    @param output_table: name of the table where the query output is stored;
+    @param outputs: list of the output column names for further reference;
+    @param query: SQL query defining the output columns;
+    @param make_persistent: mark the TABLE as persistent.
+    """
     self._self = clib.new_TemporaryTable(
         db.get(),
         output_table.encode('ascii'),
@@ -42,10 +59,12 @@ class TemporaryTable:
         )
   
   def __del__(self):
+    """@private: Release the bound class instance"""
     clib.del_TemporaryTable(self._self)
 
   @property
   def raw_pointer(self):
+    """@private: Return the raw pointer to the algorithm."""
     return self._self
 
 
