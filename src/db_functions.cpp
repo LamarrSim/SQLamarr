@@ -141,14 +141,16 @@ namespace SQLamarr
     constexpr char SEPARATOR[] = "  ";
 
     sqlite3_stmt* stmt = prepare_statement(db, query.c_str());
+    int nRows = 0;
+    int nColumns = 0;
 
-    bool first_row = true;
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
-      const int nColumns = sqlite3_column_count(stmt);
+      nColumns = sqlite3_column_count(stmt);
       int iCol;
+      nRows ++;
 
-      if (first_row)
+      if (nRows == 1)
       {
         for (iCol = 0; iCol < nColumns; ++iCol)
         {
@@ -159,8 +161,11 @@ namespace SQLamarr
           ret << f << SEPARATOR;
         }
         ret << std::endl;
-        first_row = false;
       }
+
+      if (nRows >= 10)
+        continue;
+
 
 
       for (iCol = 0; iCol < nColumns; ++iCol)
@@ -181,6 +186,8 @@ namespace SQLamarr
       }
       ret << std::endl;
     }
+
+    ret << "\n[" << nRows << " rows x " << nColumns << " columns]" << std::endl;
 
     sqlite3_finalize(stmt);
     return ret.str();
