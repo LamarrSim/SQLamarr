@@ -14,11 +14,12 @@ import SQLamarr
 print (SQLamarr.version)
 
 import os
-filename = "pytmp.db"
+#filename = "pytmp.db"
+filename = "file:memdb?mode=memory&cache=shared"
 if os.path.exists(filename):
   os.remove(filename)
 
-db = SQLamarr.SQLite3DB()
+db = SQLamarr.SQLite3DB(filename)
 db.seed(123)
 
 
@@ -66,14 +67,21 @@ acceptance_model = SQLamarr.Plugin(db,
 def my_del (c):
   c.execute("SELECT * FROM GenParticles")
 
+@SQLamarr.PyTransformer(db)
+def get_version(c):
+  for r in c.execute("SELECT sqlite_version();"):
+    print (r)
+
 clean_all = SQLamarr.CleanEventStore(db)
 pipeline = SQLamarr.Pipeline((pv_finder, mcps, pvreco, acceptance_model)) 
-# , my_del, clean_all))
 pipeline.execute()
 
 
 import pandas as pd
 with db.connect() as c:
-  df = pd.read_sql_query("SELECT * FROM GenParticles", c)
+  for table in "GenVertices", "GenParticles", "MCParticles":
+    df = pd.read_sql_query(f"SELECT * FROM {table}", c)
+    print (table)
+    print ("="*80)
+    print (df)
 
-print (df)

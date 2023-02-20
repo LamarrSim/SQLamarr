@@ -411,53 +411,55 @@ int main(int argc, char* argv[])
 
 
   std::cout << SQLamarr::dump_table(db, "SELECT COUNT(*) as n_files FROM DataSources") << std::endl;
-  std::cout << SQLamarr::dump_table(db, "SELECT * FROM DataSources LIMIT 10") << std::endl;
-  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenEvents LIMIT 10") << std::endl;
-  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenVertices LIMIT 10") << std::endl;
-  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenParticles LIMIT 10") << std::endl;
-  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenParticles WHERE status =889 LIMIT 10") << std::endl;
-  std::cout << SQLamarr::dump_table(db, "SELECT * FROM MCVertices LIMIT 10") << std::endl;
-  std::cout << SQLamarr::dump_table(db, 
-      "SELECT * FROM MCParticles WHERE is_signal == TRUE LIMIT 10") << std::endl;
-  std::cout << SQLamarr::dump_table(db, R"(
-    SELECT pid, COUNT(*) 
-    FROM GenParticles 
-    WHERE 
-      status == 889 
-      AND
-      production_vertex IS NOT NULL 
-      AND 
-      end_vertex IS NOT NULL 
-      AND 
-      production_vertex != end_vertex 
-    GROUP BY pid;
-    )");
-
-  std::cout << SQLamarr::dump_table(db, "SELECT * FROM Vertices LIMIT 10") << std::endl;
-
-  std::cout << SQLamarr::dump_table(db, R"(
-    SELECT acc.acceptance AS acc, eff.*,
-      not_recoed + long + upstream + downstream AS norm,
-      red.track_type
-      FROM tmp_efficiency_out as eff
-      INNER JOIN tmp_acceptance_out as acc 
-        ON eff.mcparticle_id = acc.mcparticle_id
-      LEFT JOIN tmp_particles_recoed_as AS red
-        ON eff.mcparticle_id = red.mcparticle_id
-      LIMIT 10)") << std::endl;
-
-  std::cout << SQLamarr::dump_table(db, R"(
-      SELECT * FROM tmp_resolution_out LIMIT 10
-    )");
-
-  std::cout << SQLamarr::dump_table(db, R"(
-      SELECT * FROM tmp_covariance_out LIMIT 10
-    )");
-
-  std::cout << SQLamarr::dump_table(db, R"(
-    SELECT * FROM tmp_closest_to_beam LIMIT 10
-  )");
-     
+//  std::cout << SQLamarr::dump_table(db, "SELECT * FROM DataSources LIMIT 10") << std::endl;
+//  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenEvents LIMIT 10") << std::endl;
+  std::cout << "GenVertices\n" << SQLamarr::dump_table(db, "SELECT * FROM GenVertices LIMIT 10") << std::endl;
+  std::cout << "GenParticles\n" << SQLamarr::dump_table(db, "SELECT * FROM GenParticles") << std::endl;
+//  std::cout << SQLamarr::dump_table(db, "SELECT * FROM GenParticles WHERE status =889 LIMIT 10") << std::endl;
+//  std::cout << SQLamarr::dump_table(db, "SELECT * FROM MCVertices LIMIT 10") << std::endl;
+  std::cout << "MCParticles\n" << SQLamarr::dump_table(db, 
+      "SELECT * FROM MCParticles") << std::endl;
+//  std::cout << SQLamarr::dump_table(db, 
+//      "SELECT * FROM MCParticles WHERE is_signal == TRUE LIMIT 10") << std::endl;
+//  std::cout << SQLamarr::dump_table(db, R"(
+//    SELECT pid, COUNT(*) 
+//    FROM GenParticles 
+//    WHERE 
+//      status == 889 
+//      AND
+//      production_vertex IS NOT NULL 
+//      AND 
+//      end_vertex IS NOT NULL 
+//      AND 
+//      production_vertex != end_vertex 
+//    GROUP BY pid;
+//    )");
+//
+//  std::cout << SQLamarr::dump_table(db, "SELECT * FROM Vertices LIMIT 10") << std::endl;
+//
+//  std::cout << SQLamarr::dump_table(db, R"(
+//    SELECT acc.acceptance AS acc, eff.*,
+//      not_recoed + long + upstream + downstream AS norm,
+//      red.track_type
+//      FROM tmp_efficiency_out as eff
+//      INNER JOIN tmp_acceptance_out as acc 
+//        ON eff.mcparticle_id = acc.mcparticle_id
+//      LEFT JOIN tmp_particles_recoed_as AS red
+//        ON eff.mcparticle_id = red.mcparticle_id
+//      LIMIT 10)") << std::endl;
+//
+//  std::cout << SQLamarr::dump_table(db, R"(
+//      SELECT * FROM tmp_resolution_out LIMIT 10
+//    )");
+//
+//  std::cout << SQLamarr::dump_table(db, R"(
+//      SELECT * FROM tmp_covariance_out LIMIT 10
+//    )");
+//
+//  std::cout << SQLamarr::dump_table(db, R"(
+//    SELECT * FROM tmp_closest_to_beam LIMIT 10
+//  )");
+//     
 
   return 0;
 }
