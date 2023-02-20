@@ -44,7 +44,7 @@ namespace SQLamarr
     More advanced or branched selection criteria can be defined by 
     inheriting from this class and overriding the `keep` method.
   */
-  class MCParticleSelector: public BaseSqlInterface, Transformer
+  class MCParticleSelector: public BaseSqlInterface, public Transformer
   {
     public:
       /// Initializes and configures the algorithm

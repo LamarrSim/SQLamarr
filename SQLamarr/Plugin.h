@@ -40,7 +40,7 @@ namespace SQLamarr
   /// used as inputs for the parametrization, but transparently copied to 
   /// the output table.
   ///
-  class Plugin: public BaseSqlInterface, Transformer
+  class Plugin: public BaseSqlInterface, public Transformer
   {
     public:
       /// Constructor

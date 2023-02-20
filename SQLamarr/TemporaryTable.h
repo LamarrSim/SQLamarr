@@ -51,7 +51,7 @@ namespace SQLamarr
    * `SQLamarr::GenerativePlugin` creating a temporary table with random numbers
 
   */
-  class TemporaryTable: public BaseSqlInterface, Transformer
+  class TemporaryTable: public BaseSqlInterface, public Transformer
   {
     public:
       /// Define the operations to define to create the temp table

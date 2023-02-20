@@ -37,7 +37,7 @@ namespace SQLamarr
       may depend on the generator and is defined as argument of the 
       constructor.
   */ 
-  class PVFinder: public BaseSqlInterface, Transformer
+  class PVFinder: public BaseSqlInterface, public Transformer
   {
     public:
       /// Constructor, with configurable signal status code

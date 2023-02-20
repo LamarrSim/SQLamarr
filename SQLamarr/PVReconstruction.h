@@ -48,7 +48,7 @@ namespace SQLamarr
      - `sigma2`, the standard deviation of the second Gaussian 
      - `sigma3`, the standard deviation of the third Gaussian 
     */
-  class PVReconstruction: public BaseSqlInterface, Transformer
+  class PVReconstruction: public BaseSqlInterface, public Transformer
   {
     public:
       /// Set of parameters defining a 3-Gaussian resolution function in 1D

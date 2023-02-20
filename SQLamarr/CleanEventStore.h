@@ -23,7 +23,7 @@ namespace SQLamarr
    * This won't change the DB schema, nor change the DB connection data,
    * but clean the database to process another batch
    */
-  class CleanEventStore: public BaseSqlInterface, Transformer
+  class CleanEventStore: public BaseSqlInterface, public Transformer
   {
     public:
       using BaseSqlInterface::BaseSqlInterface;
