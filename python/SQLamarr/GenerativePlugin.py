@@ -9,7 +9,7 @@
 
 import ctypes
 from ctypes import POINTER 
-from SQLamarr import clib
+from SQLamarr import clib, c_TransformerPtr
 from typing import List
 
 from SQLamarr.db_functions import SQLite3DB
@@ -25,9 +25,7 @@ clib.new_GenerativePlugin.argtypes = (
     ctypes.c_char_p,        # const char* comma_separated_references 
     )
     
-clib.new_GenerativePlugin.restype = ctypes.c_void_p
-
-clib.del_GenerativePlugin.argtypes = (ctypes.c_void_p,)
+clib.new_GenerativePlugin.restype = c_TransformerPtr
 
 class GenerativePlugin:
   """
@@ -75,7 +73,7 @@ class GenerativePlugin:
   
   def __del__(self):
     """@private: Release the bound class instance"""
-    clib.del_GenerativePlugin(self._self)
+    clib.del_Transformer(self._self)
 
   @property
   def raw_pointer(self):

@@ -8,14 +8,12 @@
 # or submit itself to any jurisdiction.
 import ctypes
 from ctypes import POINTER 
-from SQLamarr import clib
+from SQLamarr import clib, c_TransformerPtr
 
 from SQLamarr.db_functions import SQLite3DB
 
 clib.new_CleanEventStore.argtypes = (ctypes.c_void_p,)
-clib.new_CleanEventStore.restype = ctypes.c_void_p
-
-clib.del_CleanEventStore.argtypes = (ctypes.c_void_p,)
+clib.new_CleanEventStore.restype = c_TransformerPtr
 
 class CleanEventStore:
   """
@@ -33,7 +31,7 @@ class CleanEventStore:
   
   def __del__(self):
     """@private: Release the bound class instance"""
-    clib.del_CleanEventStore(self._self)
+    clib.del_Transformer(self._self)
 
   @property
   def raw_pointer(self):

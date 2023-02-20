@@ -13,8 +13,16 @@ import ctypes
 from SQLamarr._find_CDLL import _find_CDLL
 clib = _find_CDLL()
 
+class c_TransformerPtr (ctypes.Structure):
+  _fields_ = [ 
+      ("dtype", ctypes.c_int),
+      ("p", ctypes.c_void_p)
+      ]
+
+
 ## Setup the version of the python package by reading the version of the CDLL
 clib.get_version.restype = ctypes.c_char_p
+clib.del_Transformer.argtypes = (c_TransformerPtr,)
 version = str(clib.get_version(), "ascii")
 
 ## Database 

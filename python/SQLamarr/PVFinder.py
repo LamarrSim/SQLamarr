@@ -9,14 +9,12 @@
 
 import ctypes
 from ctypes import POINTER 
-from SQLamarr import clib
+from SQLamarr import clib, c_TransformerPtr
 
 from SQLamarr.db_functions import SQLite3DB
 
 clib.new_PVFinder.argtypes = (ctypes.c_void_p, ctypes.c_int)
-clib.new_PVFinder.restype = ctypes.c_void_p
-
-clib.del_PVFinder.argtypes = (ctypes.c_void_p,)
+clib.new_PVFinder.restype = c_TransformerPtr
 
 class PVFinder:
   """Identify the primary vertex of each GenEvent (collision process)
@@ -31,10 +29,12 @@ class PVFinder:
     @param signal_status_code: HepMC status code identifying a signal canidate
     """
     self._self = clib.new_PVFinder(db.get(), signal_status_code)
+    print (f"PVFinder {self._self.p:x}")
   
   def __del__(self):
     """@private: Release the bound class instance"""
-    clib.del_PVFinder(self._self)
+    print (f"Delete PVFinder {self._self.p:x} (type: {self._self.dtype})")
+    clib.del_Transformer(self._self)
 
   @property
   def raw_pointer(self):

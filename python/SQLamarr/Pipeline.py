@@ -9,12 +9,12 @@
 
 import ctypes
 from ctypes import POINTER 
-from SQLamarr import clib
+from SQLamarr import clib, c_TransformerPtr
 
 from typing import List, Any
 
 
-clib.execute_pipeline.argtypes = (ctypes.c_int, POINTER(ctypes.c_void_p))
+clib.execute_pipeline.argtypes = (ctypes.c_int, POINTER(c_TransformerPtr))
 
 class Pipeline:
   """
@@ -41,7 +41,7 @@ class Pipeline:
   @staticmethod
   def _exec_chunk (chunk):
     """@private Execute a sequence of C++-only transformers"""
-    ArrayOfAlgos = ctypes.c_void_p * len(chunk)
+    ArrayOfAlgos = c_TransformerPtr * len(chunk)
     buf = ArrayOfAlgos(*chunk)
     clib.execute_pipeline (len(chunk), buf)
 

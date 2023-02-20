@@ -24,6 +24,22 @@
 
 using SQLamarr::SQLite3DB;
 
+typedef enum {
+    PVFinder 
+    , MCParticleSelector 
+    , PVReconstruction
+    , Plugin
+    , GenerativePlugin
+    , TemporaryTable
+    , CleanEventStore
+  } TransformerType;
+
+struct TransformerPtr {
+  TransformerType dtype; 
+  void *p;
+};
+
+SQLamarr::Transformer* resolve_polymorphic_transformer(TransformerPtr);
 std::vector<std::string> tokenize (const char*);
 
 //==============================================================================
@@ -90,39 +106,31 @@ void HepMC2DataLoader_load (
 // PVFinder
 //==============================================================================
 extern "C"
-void *new_PVFinder (void *db, int signal_status)
+TransformerPtr new_PVFinder (void *db, int signal_status)
 {
   SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
-  return reinterpret_cast<void *> (new SQLamarr::PVFinder(*udb, signal_status));
-}
-
-extern "C"
-void del_PVFinder (void *self)
-{
-  delete reinterpret_cast<SQLamarr::PVFinder*>(self);
+  auto p = new SQLamarr::PVFinder(*udb, signal_status);
+  return {PVFinder, p};
 }
 
 //==============================================================================
 // MCParticleSelector
 //==============================================================================
 extern "C"
-void *new_MCParticleSelector (void *db)
+TransformerPtr new_MCParticleSelector (void *db)
 {
   SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
-  return reinterpret_cast<void *> (new SQLamarr::MCParticleSelector(*udb));
-}
-
-extern "C"
-void del_MCParticleSelector (void *self)
-{
-  delete reinterpret_cast<SQLamarr::MCParticleSelector*>(self);
+  return {
+    MCParticleSelector, 
+    static_cast<void *> (new SQLamarr::MCParticleSelector(*udb))
+  };
 }
 
 //==============================================================================
 // PVReconstruction
 //==============================================================================
 extern "C"
-void *new_PVReconstruction (
+TransformerPtr new_PVReconstruction (
     void *db, 
     const char* file_path,
     const char* table_name,
@@ -133,21 +141,14 @@ void *new_PVReconstruction (
   auto pars = SQLamarr::PVReconstruction::load_parametrization(
       file_path, table_name, condition);
 
-
-  return reinterpret_cast<void *> (new SQLamarr::PVReconstruction(*udb, pars));
-}
-
-extern "C"
-void del_PVReconstruction (void *self)
-{
-  delete reinterpret_cast<SQLamarr::PVReconstruction*>(self);
+  return {PVReconstruction, new SQLamarr::PVReconstruction(*udb, pars)};
 }
 
 //==============================================================================
 // Plugin
 //==============================================================================
 extern "C"
-void *new_Plugin (
+TransformerPtr new_Plugin (
     void *db,
     const char* library_path,
     const char* function_name,
@@ -159,27 +160,21 @@ void *new_Plugin (
 {
   SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
 
-  return reinterpret_cast<void *> (new SQLamarr::Plugin(*udb,
+  return {Plugin, new SQLamarr::Plugin(*udb,
         library_path,
         function_name,
         query,
         output_table,
         tokenize(comma_separated_outputs),
         tokenize(comma_separated_references)
-        ));
-}
-
-extern "C"
-void del_Plugin (void *self)
-{
-  delete reinterpret_cast<SQLamarr::Plugin*>(self);
+        )};
 }
 
 //==============================================================================
 // GenerativePlugin
 //==============================================================================
 extern "C"
-void *new_GenerativePlugin (
+TransformerPtr new_GenerativePlugin (
     void *db,
     const char* library_path,
     const char* function_name,
@@ -192,7 +187,7 @@ void *new_GenerativePlugin (
 {
   SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
 
-  return reinterpret_cast<void *> (new SQLamarr::GenerativePlugin(*udb,
+  return {GenerativePlugin, new SQLamarr::GenerativePlugin(*udb,
         library_path,
         function_name,
         query,
@@ -200,20 +195,15 @@ void *new_GenerativePlugin (
         tokenize(comma_separated_outputs),
         n_random,
         tokenize(comma_separated_references)
-        ));
+        )};
 }
 
-extern "C"
-void del_GenerativePlugin (void *self)
-{
-  delete reinterpret_cast<SQLamarr::GenerativePlugin*>(self);
-}
 
 //==============================================================================
 // TemporaryTable
 //==============================================================================
 extern "C"
-void *new_TemporaryTable (
+TransformerPtr new_TemporaryTable (
     void *db,
     const char* output_table,
     const char* comma_separated_outputs,
@@ -223,18 +213,12 @@ void *new_TemporaryTable (
 {
   SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
 
-  return reinterpret_cast<void *> (new SQLamarr::TemporaryTable(*udb,
+  return {TemporaryTable, new SQLamarr::TemporaryTable(*udb,
         output_table,
         tokenize(comma_separated_outputs),
         query,
         make_persistent
-        ));
-}
-
-extern "C"
-void del_TemporaryTable (void *self)
-{
-  delete reinterpret_cast<SQLamarr::TemporaryTable*>(self);
+        )};
 }
 
 
@@ -242,29 +226,86 @@ void del_TemporaryTable (void *self)
 // CleanEventStore
 //==============================================================================
 extern "C"
-void *new_CleanEventStore (void *db)
+TransformerPtr new_CleanEventStore (void *db)
 {
   SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
-  return reinterpret_cast<void *> (new SQLamarr::CleanEventStore(*udb));
+  return {CleanEventStore, new SQLamarr::CleanEventStore(*udb)};
 }
 
+//==============================================================================
+// Delete Transformer
+//==============================================================================
 extern "C"
-void del_CleanEventStore (void *self)
+void del_Transformer (TransformerPtr self)
 {
-  delete reinterpret_cast<SQLamarr::CleanEventStore*>(self);
+  switch (self.dtype)
+  {
+    case PVFinder:
+      delete reinterpret_cast<SQLamarr::PVFinder*> (self.p);
+      break;
+    case MCParticleSelector:
+      delete reinterpret_cast<SQLamarr::MCParticleSelector*> (self.p);
+      break;
+    case PVReconstruction:
+      delete reinterpret_cast<SQLamarr::PVReconstruction*> (self.p);
+      break;
+    case Plugin:
+      delete reinterpret_cast<SQLamarr::Plugin*> (self.p);
+      break;
+    case GenerativePlugin:
+      delete reinterpret_cast<SQLamarr::GenerativePlugin*> (self.p);
+      break;
+    case TemporaryTable:
+      delete reinterpret_cast<SQLamarr::TemporaryTable*> (self.p);
+      break;
+    case CleanEventStore:
+      delete reinterpret_cast<SQLamarr::CleanEventStore*> (self.p);
+      break;
+    default:
+      throw std::logic_error("Failed polymorphic resolution in destructor");
+  }
 }
 
+
+//==============================================================================
+// resolve_polymorphic_transformer
+//==============================================================================
+SQLamarr::Transformer* resolve_polymorphic_transformer(TransformerPtr self)
+{
+  switch (self.dtype)
+  {
+    case PVFinder:
+      return reinterpret_cast<SQLamarr::PVFinder*> (self.p);
+    case MCParticleSelector:
+      return reinterpret_cast<SQLamarr::MCParticleSelector*> (self.p);
+    case PVReconstruction:
+      return reinterpret_cast<SQLamarr::PVReconstruction*> (self.p);
+    case Plugin:
+      return reinterpret_cast<SQLamarr::Plugin*> (self.p);
+    case GenerativePlugin:
+      return reinterpret_cast<SQLamarr::GenerativePlugin*> (self.p);
+    case TemporaryTable:
+      return reinterpret_cast<SQLamarr::TemporaryTable*> (self.p);
+    case CleanEventStore:
+      return reinterpret_cast<SQLamarr::CleanEventStore*> (self.p);
+  }
+
+  throw std::logic_error("Failed polymorphic resolution");
+}
 
 //==============================================================================
 // Execute Pipeline
 //==============================================================================
 extern "C"
-void execute_pipeline(int algc, void** algv)
+void execute_pipeline(int algc, TransformerPtr* algv)
 {
   int iAlg;
 
   for (iAlg = 0; iAlg < algc; ++iAlg)
-    reinterpret_cast<SQLamarr::Transformer*> (algv[iAlg])->execute();
+  {
+    SQLamarr::Transformer* t = resolve_polymorphic_transformer(algv[iAlg]);
+    t->execute();
+  }
 }
 
 

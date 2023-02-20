@@ -9,16 +9,14 @@
 
 import ctypes
 from ctypes import POINTER 
-from SQLamarr import clib
+from SQLamarr import clib, c_TransformerPtr
 
 from SQLamarr.db_functions import SQLite3DB
 
 clib.new_PVReconstruction.argtypes = (
     ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p
     )
-clib.new_PVReconstruction.restype = ctypes.c_void_p
-
-clib.del_PVReconstruction.argtypes = (ctypes.c_void_p,)
+clib.new_PVReconstruction.restype = c_TransformerPtr
 
 class PVReconstruction:
   """
@@ -57,7 +55,7 @@ class PVReconstruction:
   
   def __del__(self):
     """@private: Release the bound class instance"""
-    clib.del_PVReconstruction(self._self)
+    clib.del_Transformer(self._self)
 
   @property
   def raw_pointer(self):
