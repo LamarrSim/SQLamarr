@@ -66,9 +66,9 @@ class GenerativePlugin:
         function_name.encode('ascii'),
         query.encode('ascii'),
         output_table.encode('ascii'),
-        ",".join(outputs).encode('ascii'),
+        ";".join(outputs).encode('ascii'),
         nRandom,
-        ",".join(references).encode('ascii'),
+        ";".join(references).encode('ascii'),
         )
   
   def __del__(self):

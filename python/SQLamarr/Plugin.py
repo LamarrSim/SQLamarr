@@ -75,8 +75,8 @@ class Plugin:
         function_name.encode('ascii'),
         query.encode('ascii'),
         output_table.encode('ascii'),
-        ",".join(outputs).encode('ascii'),
-        ",".join(references).encode('ascii'),
+        ";".join(outputs).encode('ascii'),
+        ";".join(references).encode('ascii'),
         )
 
     self._function_name = function_name

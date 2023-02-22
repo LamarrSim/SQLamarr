@@ -20,6 +20,9 @@ clib.execute_pipeline.restype = ctypes.c_int
 SQL_ERRORSHIFT = 10000
 LOGIC_ERRORSHIFT = 20000
 
+class SQLiteError (RuntimeError):
+  pass
+
 
 class Pipeline:
   """
@@ -52,7 +55,7 @@ class Pipeline:
     ret = clib.execute_pipeline (len(chunk), buf)
 
     if ret >= SQL_ERRORSHIFT and ret < SQL_ERRORSHIFT + len(chunk):
-      raise SyntaxError(f"Failed executing {chunk[ret-SQL_ERRORSHIFT]}")
+      raise SQLiteError(f"Failed executing {chunk[ret-SQL_ERRORSHIFT]}")
     elif ret >= LOGIC_ERRORSHIFT and ret < LOGIC_ERRORSHIFT + len(chunk):
       raise RuntimeError(f"Failed executing {chunk[ret-LOGIC_ERRORSHIFT]}")
     elif ret != 0:

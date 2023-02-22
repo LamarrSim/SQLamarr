@@ -159,8 +159,8 @@ TransformerPtr new_Plugin (
     const char* function_name,
     const char* query,
     const char* output_table,
-    const char* comma_separated_outputs,
-    const char* comma_separated_references
+    const char* semicolon_separated_outputs,
+    const char* semicolon_separated_references
     )
 {
   SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
@@ -170,8 +170,8 @@ TransformerPtr new_Plugin (
         function_name,
         query,
         output_table,
-        tokenize(comma_separated_outputs),
-        tokenize(comma_separated_references)
+        tokenize(semicolon_separated_outputs),
+        tokenize(semicolon_separated_references)
         )};
 }
 
@@ -185,9 +185,9 @@ TransformerPtr new_GenerativePlugin (
     const char* function_name,
     const char* query,
     const char* output_table,
-    const char* comma_separated_outputs,
+    const char* semicolon_separated_outputs,
     int n_random,
-    const char* comma_separated_references
+    const char* semicolon_separated_references
     )
 {
   SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
@@ -197,9 +197,9 @@ TransformerPtr new_GenerativePlugin (
         function_name,
         query,
         output_table,
-        tokenize(comma_separated_outputs),
+        tokenize(semicolon_separated_outputs),
         n_random,
-        tokenize(comma_separated_references)
+        tokenize(semicolon_separated_references)
         )};
 }
 
@@ -211,8 +211,8 @@ extern "C"
 TransformerPtr new_TemporaryTable (
     void *db,
     const char* output_table,
-    const char* comma_separated_outputs,
-    const char* query,
+    const char* semicolon_separated_outputs,
+    const char* semicolon_separated_queries,
     bool make_persistent
     )
 {
@@ -220,8 +220,8 @@ TransformerPtr new_TemporaryTable (
 
   return {TemporaryTable, new SQLamarr::TemporaryTable(*udb,
         output_table,
-        tokenize(comma_separated_outputs),
-        query,
+        tokenize(semicolon_separated_outputs),
+        tokenize(semicolon_separated_queries),
         make_persistent
         )};
 }
@@ -344,12 +344,12 @@ std::vector<std::string> tokenize (const char* input_str)
   strcpy(buf, input_str);
 
   // Tokenize the string
-  char *token = strtok(buf, ",");
+  char *token = strtok(buf, ";");
 
   while (token != NULL)
   {
     ret.push_back(token);
-    token = strtok(NULL, ",");
+    token = strtok(NULL, ";");
   }
 
   // Return buffer

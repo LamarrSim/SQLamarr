@@ -10,7 +10,7 @@
 import ctypes
 from ctypes import POINTER 
 from SQLamarr import clib, c_TransformerPtr
-from typing import List
+from typing import List, Union
 
 from SQLamarr.db_functions import SQLite3DB
 
@@ -34,8 +34,8 @@ class TemporaryTable:
       self, 
       db: SQLite3DB,
       output_table: str,
-      outputs: str,
-      query: str,
+      outputs: List[str],
+      query: Union[str, List[str]],
       make_persistent: bool = False,
       ):
     """
@@ -45,14 +45,17 @@ class TemporaryTable:
     @param db: An open database connection;
     @param output_table: name of the table where the query output is stored;
     @param outputs: list of the output column names for further reference;
-    @param query: SQL query defining the output columns;
+    @param query: SQL query (or queries) defining the output columns;
     @param make_persistent: mark the TABLE as persistent.
     """
+    if isinstance(query, str):
+      query = [query]
+
     self._self = clib.new_TemporaryTable(
         db.get(),
         output_table.encode('ascii'),
-        ",".join(outputs).encode('ascii'),
-        query.encode('ascii'),
+        ";".join(outputs).encode('ascii'),
+        ";".join([q.replace(";", " ") for q in query]).encode('ascii'),
         make_persistent,
         )
   
