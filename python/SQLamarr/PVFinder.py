@@ -29,11 +29,9 @@ class PVFinder:
     @param signal_status_code: HepMC status code identifying a signal canidate
     """
     self._self = clib.new_PVFinder(db.get(), signal_status_code)
-    print (f"PVFinder {self._self.p:x}")
   
   def __del__(self):
     """@private: Release the bound class instance"""
-    print (f"Delete PVFinder {self._self.p:x} (type: {self._self.dtype})")
     clib.del_Transformer(self._self)
 
   @property
