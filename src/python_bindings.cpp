@@ -10,6 +10,7 @@
 
 #include <string.h>
 #include <memory>
+#include <exception>
 #include <iostream>
 #include "SQLamarr/HepMC2DataLoader.h"
 #include "SQLamarr/PVFinder.h"
@@ -21,6 +22,10 @@
 #include "SQLamarr/GlobalPRNG.h"
 #include "SQLamarr/TemporaryTable.h"
 #include "SQLamarr/CleanEventStore.h"
+#include "SQLamarr/SQLiteError.h"
+
+constexpr int SQL_ERRORSHIFT = 10000;
+constexpr int LOGIC_ERRORSHIFT = 20000;
 
 using SQLamarr::SQLite3DB;
 
@@ -262,7 +267,7 @@ void del_Transformer (TransformerPtr self)
       delete reinterpret_cast<SQLamarr::CleanEventStore*> (self.p);
       break;
     default:
-      throw std::logic_error("Failed polymorphic resolution in destructor");
+      throw std::bad_cast();
   }
 }
 
@@ -290,22 +295,39 @@ SQLamarr::Transformer* resolve_polymorphic_transformer(TransformerPtr self)
       return reinterpret_cast<SQLamarr::CleanEventStore*> (self.p);
   }
 
-  throw std::logic_error("Failed polymorphic resolution");
+  throw std::bad_cast();
 }
 
 //==============================================================================
 // Execute Pipeline
 //==============================================================================
 extern "C"
-void execute_pipeline(int algc, TransformerPtr* algv)
+int execute_pipeline(int algc, TransformerPtr* algv)
 {
   int iAlg;
 
   for (iAlg = 0; iAlg < algc; ++iAlg)
   {
     SQLamarr::Transformer* t = resolve_polymorphic_transformer(algv[iAlg]);
-    t->execute();
+    try
+    {
+      t->execute();
+    }
+    catch (const SQLamarr::SQLiteError& e)
+    {
+      std::cerr << "Caught SQL error processing #alg: " << iAlg << "\n";
+      std::cerr << e.what() << std::endl;
+      return SQL_ERRORSHIFT + iAlg; 
+    }
+    catch (const std::logic_error& e)
+    {
+      std::cerr << "Caught logic error processing #alg: " << iAlg << "\n";
+      std::cerr << e.what() << std::endl;
+      return LOGIC_ERRORSHIFT + iAlg; 
+    }
   }
+
+  return 0;
 }
 
 

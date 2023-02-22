@@ -19,6 +19,7 @@
 #include "SQLamarr/preprocessor_symbols.h"
 #include "SQLamarr/PVReconstruction.h"
 #include "SQLamarr/GlobalPRNG.h"
+#include "SQLamarr/SQLiteError.h"
 
 namespace SQLamarr 
 {
@@ -39,7 +40,7 @@ namespace SQLamarr
         << "Failed query for " << condition 
         << " coordinate: " << coord 
         << std::endl; 
-      throw std::logic_error("Cannot load parametrization line");
+      throw SQLiteError("Cannot load parametrization line");
     }
 
     return {
@@ -119,7 +120,7 @@ namespace SQLamarr
     sqlite3_open_v2(file_path.c_str(), &db, SQLITE_OPEN_READONLY, nullptr);
 
     if (!db)
-      throw std::logic_error("Cannot open PVReconstruction DB");
+      throw SQLiteError("Cannot open PVReconstruction DB");
 
     char query[1024];
     sprintf(query, R"(
@@ -137,7 +138,7 @@ namespace SQLamarr
     if (sqlite3_prepare_v2(db, query, -1, &load_stmt, nullptr) != SQLITE_OK)
     {
       std::cerr << sqlite3_errmsg(db) << std::endl;
-      throw std::logic_error ("Failed preparing a statement");
+      throw SQLiteError("Failed preparing a statement");
     }
     
 

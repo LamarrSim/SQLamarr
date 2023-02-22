@@ -15,6 +15,11 @@ from typing import List, Any
 
 
 clib.execute_pipeline.argtypes = (ctypes.c_int, POINTER(c_TransformerPtr))
+clib.execute_pipeline.restype = ctypes.c_int
+
+SQL_ERRORSHIFT = 10000
+LOGIC_ERRORSHIFT = 20000
+
 
 class Pipeline:
   """
@@ -38,12 +43,20 @@ class Pipeline:
     """
     self._algorithms = algoritms
 
+
   @staticmethod
   def _exec_chunk (chunk):
     """@private Execute a sequence of C++-only transformers"""
     ArrayOfAlgos = c_TransformerPtr * len(chunk)
-    buf = ArrayOfAlgos(*chunk)
-    clib.execute_pipeline (len(chunk), buf)
+    buf = ArrayOfAlgos(*[c.raw_pointer for c in chunk])
+    ret = clib.execute_pipeline (len(chunk), buf)
+
+    if ret >= SQL_ERRORSHIFT and ret < SQL_ERRORSHIFT + len(chunk):
+      raise SyntaxError(f"Failed executing {chunk[ret-SQL_ERRORSHIFT]}")
+    elif ret >= LOGIC_ERRORSHIFT and ret < LOGIC_ERRORSHIFT + len(chunk):
+      raise RuntimeError(f"Failed executing {chunk[ret-LOGIC_ERRORSHIFT]}")
+    elif ret != 0:
+      raise Exception("Unknown error code from pipeline exec")
 
   def execute(self):
     """Execute the list of algorithms"""
@@ -54,7 +67,7 @@ class Pipeline:
         chunk = []
         alg()
       elif hasattr(alg, 'raw_pointer'):
-        chunk.append(alg.raw_pointer)
+        chunk.append(alg)
       else:
         raise TypeError(
             f"Unexpected algorithm {alg} ({alg.__class__.__name__})"

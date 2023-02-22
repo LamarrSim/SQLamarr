@@ -78,6 +78,8 @@ class Plugin:
         ",".join(outputs).encode('ascii'),
         ",".join(references).encode('ascii'),
         )
+
+    self._function_name = function_name
   
   def __del__(self):
     """@private: Release the bound class instance"""
@@ -87,5 +89,9 @@ class Plugin:
   def raw_pointer(self):
     """@private: Return the raw pointer to the algorithm."""
     return self._self
+
+  def __str__(self):
+    """@private: Indicateds the linked symbol for error displaying."""
+    return f"<SQLamarr.Plugin '{self._function_name}'>"
 
 

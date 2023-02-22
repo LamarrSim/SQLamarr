@@ -9,6 +9,7 @@
 
 
 #include "SQLamarr/MCParticleSelector.h"
+#include "SQLamarr/SQLiteError.h"
 #include <iostream>
 #include <algorithm>
 
@@ -52,7 +53,7 @@ namespace SQLamarr
     end_transaction();
 
     if (!traversal_status)
-      throw std::logic_error("Graph traversal failed.");
+      throw SQLiteError("Graph traversal failed.");
   }
 
   //============================================================================
@@ -204,7 +205,7 @@ namespace SQLamarr
 
     exec_stmt(insert_end_vertex);
     if (!exec_stmt(get_end_vertex))
-      throw std::logic_error("MCParticleSelector failed to insert an end-vertex");
+      throw SQLiteError("MCParticleSelector failed to insert an end-vertex");
 
     return sqlite3_column_int (get_end_vertex, 0);
   }

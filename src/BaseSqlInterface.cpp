@@ -10,6 +10,7 @@
 
 #include "SQLamarr/BaseSqlInterface.h"
 #include "SQLamarr/custom_sql_functions.h"
+#include "SQLamarr/SQLiteError.h"
 #include "sqlite3.h"
 #include <iostream>
 
@@ -75,7 +76,7 @@ namespace SQLamarr
       case SQLITE_ROW:  return true;
       default:
         std::cerr << sqlite3_errmsg(m_database.get()) << std::endl;
-        throw std::logic_error("SQL Error");
+        throw SQLiteError("SQL Error");
     }
 
     return false;

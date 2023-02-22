@@ -15,6 +15,7 @@
 #include <cmath>
 
 #include "SQLamarr/db_functions.h"
+#include "SQLamarr/SQLiteError.h"
 #include "schema.sql"
 
 namespace SQLamarr
@@ -94,14 +95,14 @@ namespace SQLamarr
         << sqlite3_errmsg(db)
         << std::endl;
      
-      throw std::logic_error("Failed to instantiate SQLite3 DB");
+      throw SQLiteError("Failed to instantiate SQLite3 DB");
     }
 
     retcode = sqlite3_exec(db, init.c_str(), nullptr, nullptr, &zErrMsg);
     if (retcode)
     {
       std::cerr << sqlite3_errmsg(db) << std::endl;
-      throw (std::logic_error("SQL Error in make_database"));
+      throw (SQLiteError("SQL Error in make_database"));
     }
 
     return SQLite3DB(
@@ -126,7 +127,7 @@ namespace SQLamarr
     if (retcode != SQLITE_OK)
     {
       std::cerr << sqlite3_errmsg(db.get()) << std::endl;
-      throw std::logic_error("Failed to compile query");
+      throw SQLiteError("Failed to compile query");
     }
 
     return stmt;
