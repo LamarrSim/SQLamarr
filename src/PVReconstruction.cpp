@@ -114,7 +114,6 @@ namespace SQLamarr
           const std::string condition
       )
   {
-    std::cout << "Loading " << file_path << std::endl;
     sqlite3* db;
 
     sqlite3_open_v2(file_path.c_str(), &db, SQLITE_OPEN_READONLY, nullptr);
