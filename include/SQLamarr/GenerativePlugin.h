@@ -75,8 +75,13 @@ namespace SQLamarr
 
 
     protected:
-      virtual void eval_parametrization (float* output, const float* input);
-      virtual void load_func (void* handle, const std::string& function_name);
+      virtual 
+      void eval_parametrization (float* output, const float* input) override;
+      ///< @private Override default logic for evaluating the external function
+      
+      virtual 
+      void load_func (void* handle, const std::string& function_name) override;
+      ///< @private Override default prototype when loading the external function
 
       typedef float *(*ganfunc)(float *, const float*, const float*);
       ganfunc m_func;
