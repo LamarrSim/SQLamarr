@@ -33,6 +33,7 @@ project(SQLamarr)
       src/PVFinder.cpp
       src/PVReconstruction.cpp
       src/MCParticleSelector.cpp
+      src/BasePlugin.cpp
       src/Plugin.cpp
       src/GenerativePlugin.cpp
       src/TemporaryTable.cpp

@@ -17,6 +17,9 @@
 #include "SQLamarr/GenerativePlugin.h"
 #include "SQLamarr/GlobalPRNG.h"
 
+#include <iostream> 
+
+
 namespace SQLamarr 
 {
   void GenerativePlugin::eval_parametrization (float* output, const float* input)
@@ -29,18 +32,5 @@ namespace SQLamarr
       r = gaussian(*generator);
 
     m_func(output, input, rnd.data()); 
-  }
-  
-  //============================================================================
-  // load_func. Internal.
-  //============================================================================
-  void GenerativePlugin::load_func (void *handle, const std::string& function_name)
-  {
-    m_func = ganfunc(dlsym(handle, function_name.c_str()));
-    if (!m_func)
-    {
-      std::cerr << "Failure while loading " << function_name << std::endl;
-      throw std::runtime_error("Failed loading function");
-    }
   }
 }

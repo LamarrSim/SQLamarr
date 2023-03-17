@@ -9,28 +9,30 @@
 
 
 #pragma once
-
-// STL
+//STL
 #include <vector>
 #include <string>
 
 // SQLamarr
-#include "SQLamarr/db_functions.h"
-#include "SQLamarr/BaseSqlInterface.h"
-#include "SQLamarr/Transformer.h"
+#include "SQLamarr/BasePlugin.h"
 
 namespace SQLamarr
 {
-  /// Interface to dynamically linked parametrizations.
+  /// Interface to dynamically linked *generative* parametrizations.
   ///
-  /// A SQLamarr `Plugin` is a parametrization defined in a shared object
+  /// A `SQLamarr::Plugin` is a parametrization defined in a shared object
   /// dynamically linked at run time.
-  /// For an example to generate such parametrizations, please refer to 
-  /// the [scikinC](https://github.com/landerlini/scikinC) project.
   /// 
-  /// The `Plugin` class takes care of selecting the input columns from 
-  /// the database, links the external library based on its path and 
-  /// the name of the function and finally creates a table with the output.
+  /// `Plugin` specialize the `BasePlugin` class to parametrizations
+  /// taking as an input one or more normally distributed random features.
+  /// These additional random features are usually injected at some point 
+  /// of the pipeline generating random features according to a pdf 
+  /// conditioned by the features. 
+  /// 
+  /// As for the all classes inheriting from `BasePlugin` class, `Plugin` 
+  /// takes care of selecting the input columns from the database, links the 
+  /// external ibrary based on its path and the name of the function and 
+  /// finally creates a table with the output.
   /// 
   /// If a table with the same name as the output table exists in the 
   /// database, it is overwritten without warning.
@@ -40,7 +42,7 @@ namespace SQLamarr
   /// used as inputs for the parametrization, but transparently copied to 
   /// the output table.
   ///
-  class Plugin: public BaseSqlInterface, public Transformer
+  class Plugin: public BasePlugin
   {
     public:
       /// Constructor
@@ -63,42 +65,22 @@ namespace SQLamarr
             ///  compiled parametrization.
           const std::vector<std::string> reference_keys = {"ref_id"}
             ///< List of column names ignored.
-          );
+          ) 
+          : BasePlugin(db, library, function_name, select_query, 
+              output_table, outputs, reference_keys)
+          , m_func (load_func<mlfunc>(function_name))
+          {}
 
-      /// Execute the external function and copies the output 
-      /// in a new table.
-      void execute () override;
 
-    protected:
-      /// Evaluate the external parametrization. This function can be 
-      /// overridden to provide custom preprocessing and postprocessing steps,
-      /// or to link to functions with custom signature.
-      virtual void eval_parametrization (float* output, const float* input)
-      { m_func(output, input); }
-
-      virtual void load_func (void* handle, const std::string& function_name);
-
-    protected: // Types
+    private:
+      virtual 
+      void eval_parametrization (float* output, const float* input) override;
+      ///< @private Override default logic for evaluating the external function
+      
       typedef float *(*mlfunc)(float *, const float*);
-
-    private: // Properties
-      const std::string m_library;
-      const std::string m_function_name;
-      const std::string m_select_query;
-      const std::string m_output_table;
-      const std::vector<std::string> m_outputs;
-      const std::vector<std::string> m_refkeys;
-
-      void *m_handle;
-
-    protected: //Properties 
       mlfunc m_func;
-
-    private: // Methods
-      std::vector<std::string>  get_column_names() const;
-      std::string  compose_delete_query();
-      std::string  compose_create_query();
-      std::string  compose_insert_query();
   };
-
 }
+
+
+

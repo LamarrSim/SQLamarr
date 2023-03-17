@@ -14,7 +14,7 @@
 #include <string>
 
 // SQLamarr
-#include "SQLamarr/Plugin.h"
+#include "SQLamarr/BasePlugin.h"
 
 namespace SQLamarr
 {
@@ -23,13 +23,13 @@ namespace SQLamarr
   /// A `SQLamarr::lugin` is a parametrization defined in a shared object
   /// dynamically linked at run time.
   /// 
-  /// `GenerativePlugin` specialize the `Plugin` class to parametrizations
+  /// `GenerativePlugin` specialize the `BasePlugin` class to parametrizations
   /// taking as an input one or more normally distributed random features.
   /// These additional random features are usually injected at some point 
   /// of the pipeline generating random features according to a pdf 
   /// conditioned by the features. 
   /// 
-  /// As for the `Plugin` class, `GenerativePlugin` takes care of 
+  /// As for the `BasePlugin` class, `GenerativePlugin` takes care of 
   /// selecting the input columns from the database, links the external 
   /// library based on its path and the name of the function and finally 
   /// creates a table with the output.
@@ -42,7 +42,7 @@ namespace SQLamarr
   /// used as inputs for the parametrization, but transparently copied to 
   /// the output table.
   ///
-  class GenerativePlugin: public Plugin
+  class GenerativePlugin: public BasePlugin
   {
     public:
       /// Constructor
@@ -69,25 +69,21 @@ namespace SQLamarr
           const std::vector<std::string> reference_keys = {"ref_id"}
             ///< List of column names ignored.
           ) 
-          : Plugin(db, library, function_name, select_query, 
+          : BasePlugin(db, library, function_name, select_query, 
               output_table, outputs, reference_keys)
-          , m_n_random (n_random) {}
-
-
-    protected:
-      virtual 
-      void eval_parametrization (float* output, const float* input) override;
-      ///< @private Override default logic for evaluating the external function
-      
-      virtual 
-      void load_func (void* handle, const std::string& function_name) override;
-      ///< @private Override default prototype when loading the external function
-
-      typedef float *(*ganfunc)(float *, const float*, const float*);
-      ganfunc m_func;
+          , m_func(load_func<genfunc>(function_name))
+          , m_n_random (n_random) 
+          {}
 
 
     private:
+      virtual 
+      void eval_parametrization (float* output, const float* input) override;
+      ///< @private Override default logic for evaluating the external function
+
+      typedef float *(*genfunc)(float *, const float*, const float*);
+      genfunc m_func;
+
       unsigned int m_n_random;
   };
 }
