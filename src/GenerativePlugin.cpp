@@ -28,7 +28,7 @@ namespace SQLamarr
     for (auto& r: rnd) 
       r = gaussian(*generator);
 
-    (reinterpret_cast<ganfunc>(m_func))(output, input, rnd.data()); 
+    m_func(output, input, rnd.data()); 
   }
   
   //============================================================================
