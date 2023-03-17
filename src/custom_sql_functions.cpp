@@ -240,8 +240,8 @@ void _sqlamarr_sql_propagation_charge (
 //==============================================================================
 void _sqlamarr_sql_random_uniform (
     sqlite3_context *context,
-    int argc,
-    sqlite3_value **argv
+    int /*argc*/,
+    sqlite3_value ** /*argv*/
     )
 {
   auto generator = SQLamarr::GlobalPRNG::get_or_create(context);
@@ -255,8 +255,8 @@ void _sqlamarr_sql_random_uniform (
 //==============================================================================
 void _sqlamarr_sql_random_normal (
     sqlite3_context *context,
-    int argc,
-    sqlite3_value **argv
+    int /*argc*/,
+    sqlite3_value ** /*argv*/
     )
 {
   auto generator = SQLamarr::GlobalPRNG::get_or_create(context);

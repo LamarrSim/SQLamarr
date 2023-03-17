@@ -51,17 +51,26 @@ namespace SQLamarr
       throw std::runtime_error("Failed loading library");
     }
 
-    m_func = mlfunc(dlsym(m_handle, m_function_name.c_str()));
-    if (!m_func)
-    {
-      std::cerr << "Failure while loading " << m_function_name << std::endl;
-      throw std::runtime_error("Failed loading function");
-    }
+    // Load the function
+    load_func(m_handle, m_function_name);
 
     // Throw an error if tokens are not alphanumeric (possible SQL injection)
     validate_token(m_output_table);
     for (const std::string& t: m_outputs) validate_token(t);
     for (const std::string& t: m_refkeys) validate_token(t);
+  }
+  
+  //============================================================================
+  // load_func. Internal.
+  //============================================================================
+  void Plugin::load_func (void *handle, const std::string& function_name)
+  {
+    m_func = mlfunc(dlsym(handle, function_name.c_str()));
+    if (!m_func)
+    {
+      std::cerr << "Failure while loading " << function_name << std::endl;
+      throw std::runtime_error("Failed loading function");
+    }
   }
 
   //============================================================================

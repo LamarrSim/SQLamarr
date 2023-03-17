@@ -7,6 +7,8 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
+// Standard C
+#include <dlfcn.h>
 
 // STL
 #include <random>
@@ -27,5 +29,18 @@ namespace SQLamarr
       r = gaussian(*generator);
 
     (reinterpret_cast<ganfunc>(m_func))(output, input, rnd.data()); 
+  }
+  
+  //============================================================================
+  // load_func. Internal.
+  //============================================================================
+  void GenerativePlugin::load_func (void *handle, const std::string& function_name)
+  {
+    m_func = ganfunc(dlsym(handle, function_name.c_str()));
+    if (!m_func)
+    {
+      std::cerr << "Failure while loading " << function_name << std::endl;
+      throw std::runtime_error("Failed loading function");
+    }
   }
 }

@@ -18,7 +18,7 @@ project(SQLamarr)
   set(SQLite3_LIBRARIES ${PREFIX_PATH}/lib/libsqlite3.so)
   set(SQLite3_INCLUDE_DIRS ${PREFIX_PATH}/include)
 
-  set(LAMARR_INCLUDE_DIR ${PROJECT_SOURCE_DIR}) 
+  set(LAMARR_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include) 
 
   include_directories(${HEPMC3_INCLUDE_DIR})
   include_directories(${SQLite_INCLUDE_DIRS})
