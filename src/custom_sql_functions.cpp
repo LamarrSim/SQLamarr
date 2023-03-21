@@ -81,7 +81,7 @@ void sqlamarr_create_sql_functions (sqlite3 *db)
 //==============================================================================
 void _sqlamarr_sql_log (
     sqlite3_context *context,
-    int argc,
+    int /*argc*/,
     sqlite3_value **argv
     )
 {
