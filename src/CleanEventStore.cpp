@@ -28,9 +28,9 @@ namespace SQLamarr
   void CleanEventStore::execute()
   {
     sqlite3_stmt* list_tables = get_statement("list_tables",
-        "SELECT name FROM main.sqlite_schema WHERE type='table'");
+        "SELECT name FROM sqlite_master WHERE type='table'");
     sqlite3_stmt* list_temp_tables = get_statement("list_temp_tables",
-        "SELECT name FROM temp.sqlite_schema WHERE type='table'");
+        "SELECT name FROM sqlite_temp_master WHERE type='table'");
 
     std::vector<std::string> tables;
     while (exec_stmt(list_tables))
