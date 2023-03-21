@@ -86,7 +86,7 @@ void _sqlamarr_sql_log (
     )
 {
   double res = 0;
-  res = log(sqlite3_value_double(argv[iPar]));
+  res = log(sqlite3_value_double(argv[0]));
   sqlite3_result_double(context, res);
 }
 
