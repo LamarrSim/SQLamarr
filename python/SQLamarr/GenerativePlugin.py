@@ -67,7 +67,7 @@ class GenerativePlugin:
         query.encode('ascii'),
         output_table.encode('ascii'),
         ";".join(outputs).encode('ascii'),
-        nRandom,
+        int(nRandom),
         ";".join(references).encode('ascii'),
         )
   
