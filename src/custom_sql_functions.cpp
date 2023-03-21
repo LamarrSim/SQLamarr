@@ -24,6 +24,11 @@ void sqlamarr_create_sql_functions (sqlite3 *db)
   int nPars;
 
   sqlite3_create_function(db,
+      "log", 1,
+      SQLITE_UTF8, NULL, &_sqlamarr_sql_log, NULL, NULL
+      );
+
+  sqlite3_create_function(db,
       "norm2", 3,
       SQLITE_UTF8, NULL, &_sqlamarr_sql_norm2, NULL, NULL
       );
@@ -69,6 +74,20 @@ void sqlamarr_create_sql_functions (sqlite3 *db)
       SQLITE_UTF8, NULL, &_sqlamarr_sql_z_closest_to_beam, NULL, NULL
       );
 
+}
+
+//==============================================================================
+// log
+//==============================================================================
+void _sqlamarr_sql_log (
+    sqlite3_context *context,
+    int argc,
+    sqlite3_value **argv
+    )
+{
+  double res = 0;
+  res = log(sqlite3_value_double(argv[iPar]));
+  sqlite3_result_double(context, res);
 }
 
 //==============================================================================
