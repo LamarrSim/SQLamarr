@@ -147,6 +147,7 @@ namespace SQLamarr
     ret.y() = _get_param_line (load_stmt, condition, "y");
     ret.z() = _get_param_line (load_stmt, condition, "z");
     
+    sqlite3_finalize(load_stmt);
     sqlite3_close(db);
 
 
