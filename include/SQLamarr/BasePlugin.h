@@ -81,6 +81,10 @@ namespace SQLamarr
             ///< List of column names ignored.
           );
 
+      BasePlugin (BasePlugin&) = delete;
+
+      virtual ~BasePlugin() {dlclose(m_handle);}
+
       /// Execute the external function and copies the output 
       /// in a new table.
       void execute () override;

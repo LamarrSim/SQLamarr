@@ -9,7 +9,7 @@ namespace SQLamarr
       //========================================================================
       // make
       //========================================================================
-      GenerativePlugin make(
+      std::unique_ptr<GenerativePlugin> make(
           SQLite3DB& db,
           const std::string& library,
           const std::string& function_name,
@@ -39,14 +39,16 @@ namespace SQLamarr
         char buffer[1024];
         sprintf(buffer, q, particle_table.c_str(),  track_table.c_str(), abspid);
 
-        return SQLamarr::GenerativePlugin (db,
-              library,
-              function_name,
-              buffer,
-              output_table,
-              get_column_names(false, true), 
-              64, 
-              get_column_names(true, false)
+        return std::unique_ptr<GenerativePlugin>(
+              new GenerativePlugin (db,
+                library,
+                function_name,
+                buffer,
+                output_table,
+                get_column_names(false, true), 
+                64, 
+                get_column_names(true, false)
+              )
             );
       }
 

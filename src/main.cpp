@@ -379,18 +379,17 @@ int main(int argc, char* argv[])
   const std::string particle_table = "MCParticles";
   const std::string track_table = "tmp_particles_recoed_as";
 
-  std::vector<SQLamarr::GenerativePlugin> pid_algos{
-    SQLamarr::BlockLib::LbParticleId::make (db, pidlib, "pion_pipe", "tmp_pid_pi",
-        particle_table, track_table, 211),
-    SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "kaon_pipe", "tmp_pid_k",
-        particle_table, track_table, 321),
-    SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "proton_pipe", "tmp_pid_p",
-        particle_table, track_table, 2212),
-    SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "muon_pipe", "tmp_pid_mu",
-        particle_table, track_table, 13),
-  };
+  std::vector<std::unique_ptr<SQLamarr::GenerativePlugin>> pid_algos;
+  pid_algos.push_back(SQLamarr::BlockLib::LbParticleId::make (db, pidlib, "pion_pipe", "tmp_pid_pi",
+        particle_table, track_table, 211));
+  pid_algos.push_back(SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "kaon_pipe", "tmp_pid_k",
+        particle_table, track_table, 321));
+  pid_algos.push_back(SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "proton_pipe", "tmp_pid_p",
+        particle_table, track_table, 2212));
+  pid_algos.push_back(SQLamarr::BlockLib::LbParticleId::make(db, pidlib, "muon_pipe", "tmp_pid_mu",
+        particle_table, track_table, 13));
   for (auto& pid_algo: pid_algos)
-    pid_algo.execute();
+    pid_algo->execute();
 
   SQLamarr::TemporaryTable concat_pid(db,
       "pid",

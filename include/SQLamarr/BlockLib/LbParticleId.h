@@ -3,6 +3,8 @@
 #include "SQLamarr/db_functions.h"
 #include "SQLamarr/GenerativePlugin.h"
 
+#include <memory>
+
 
 namespace SQLamarr 
 { 
@@ -22,7 +24,7 @@ namespace SQLamarr
     namespace LbParticleId
     {
       /// Initialize a `GenerativePlugin` specialized for PID pipelines
-      GenerativePlugin make (
+      std::unique_ptr<GenerativePlugin> make (
           SQLite3DB& db,
             ///< Reference to the database 
           const std::string& library,
