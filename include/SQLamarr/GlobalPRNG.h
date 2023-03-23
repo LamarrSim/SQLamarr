@@ -15,12 +15,12 @@
 #include <random>
 #include <memory>
 #include <iostream>
+#include <mutex>
 
 #include "sqlite3.h"
 
 namespace SQLamarr
 {
-  template <class PRNG>
   /** Singleton handler of Pseudo-Random Number Generator(s)
   
   The generation of pseudo-random numbers for Monte Carlo applications is a 
@@ -70,7 +70,14 @@ namespace SQLamarr
   [provided](https://cplusplus.com/reference/random/ranlux48/) 
   by the C++ STL.
 
+  Note on multithreading. A std::unordered_map is used to associate a 
+  random number generator to a given database. Since the operations 
+  of consulting and updating an unordered_map are not thread-safe
+  and since, by design, such a mapping must be shared across multiple
+  threads, the access to the map is protected by a **std::mutex**. 
+
   */  
+  template <class PRNG>
   class T_GlobalPRNG
   {
     public: // static methods
@@ -107,6 +114,7 @@ namespace SQLamarr
       {
         // Gets the singleton handle
         T_GlobalPRNG& h {T_GlobalPRNG::handle()};
+        std::lock_guard<std::mutex>(h.m_mutex); // Forbids multithreading
 
         // Looks for the DB in the hash table
         auto gen_it = h.m_generators.find(db);
@@ -149,6 +157,8 @@ namespace SQLamarr
       static bool release (const sqlite3* db)
       {
         T_GlobalPRNG& h {T_GlobalPRNG::handle()};
+        std::lock_guard<std::mutex>(h.m_mutex); // Forbids multithreading
+
         auto it = h.m_generators.find(db);
         bool releasing_unexisting = (it == h.m_generators.end());
         h.m_generators.erase(db);
@@ -160,6 +170,8 @@ namespace SQLamarr
       T_GlobalPRNG() {}
 
       std::unordered_map<const sqlite3*, std::unique_ptr<PRNG> > m_generators;
+
+      std::mutex m_mutex;
 
     public:
       /// Copy constructor disabled as per singleton pattern
