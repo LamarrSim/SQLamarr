@@ -15,6 +15,7 @@
 #include <cmath>
 
 #include "SQLamarr/db_functions.h"
+#include "SQLamarr/GlobalPRNG.h"
 #include "SQLamarr/SQLiteError.h"
 #include "schema.sql"
 
@@ -108,6 +109,7 @@ namespace SQLamarr
     return SQLite3DB(
         db,
         [](sqlite3* ptr) {
+        SQLamarr::GlobalPRNG::release(ptr);
         sqlite3_close(ptr);
         }
         );
