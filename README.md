@@ -4,7 +4,7 @@
 ![Lamarr logo](https://avatars.githubusercontent.com/u/125392434?s=200&v=4)
 
 # SQLamarr
-*The stand-alone ultra-fast simulation option for LHCb*
+*The stand-alone ultra-fast simulation option for the LHCb experiment.*
 
 The detailed simulation of the hadron collisions at the LHC, and of the 
 interaction of the generated particles with the detector material
