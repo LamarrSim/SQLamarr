@@ -4,7 +4,7 @@
 ![Lamarr logo](https://avatars.githubusercontent.com/u/125392434?s=200&v=4)
 
 # SQLamarr
-*The stand-alone ultra-fast simulation option for LHCb*
+*The stand-alone ultra-fast simulation option for the LHCb experiment.*
 
 The detailed simulation of the hadron collisions at the LHC, and of the 
 interaction of the generated particles with the detector material
@@ -121,3 +121,8 @@ of the objects defined in the main part of the library.
 This software is distributed under the terms of the GNU General Public Licence version 3 (GPL Version 3), copied verbatim in the file "LICENCE".
                                                                             
 In applying this licence, CERN does not waive the privileges and immunities granted to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+
+We acknowledge the support of the ICSC Foundation to the development of SQLamarr.
+
+![image](https://user-images.githubusercontent.com/44908794/227858127-47d2b66f-4f1b-4f34-b505-814748957123.png)
+
