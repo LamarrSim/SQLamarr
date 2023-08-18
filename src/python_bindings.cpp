@@ -340,7 +340,7 @@ std::vector<std::string> tokenize (const char* input_str)
   std::vector<std::string> ret;
 
   // Copy the input string in a writable buffer
-  char buf[1024];
+  char buf[16384];
   strcpy(buf, input_str);
 
   // Tokenize the string
