@@ -39,6 +39,7 @@ from SQLamarr.Plugin import Plugin
 from SQLamarr.GenerativePlugin import GenerativePlugin
 from SQLamarr.TemporaryTable import TemporaryTable
 from SQLamarr.CleanEventStore import CleanEventStore
+from SQLamarr.EditEventStore import EditEventStore
 
 ## Python Transfomer
 from SQLamarr.PyTransformer import PyTransformer

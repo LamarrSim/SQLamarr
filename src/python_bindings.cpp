@@ -22,6 +22,7 @@
 #include "SQLamarr/GlobalPRNG.h"
 #include "SQLamarr/TemporaryTable.h"
 #include "SQLamarr/CleanEventStore.h"
+#include "SQLamarr/EditEventStore.h"
 #include "SQLamarr/SQLiteError.h"
 
 constexpr int SQL_ERRORSHIFT = 10000;
@@ -37,6 +38,7 @@ typedef enum {
     , GenerativePlugin
     , TemporaryTable
     , CleanEventStore
+    , EditEventStore
   } TransformerType;
 
 struct TransformerPtr {
@@ -238,6 +240,21 @@ TransformerPtr new_CleanEventStore (void *db)
 }
 
 //==============================================================================
+// EditEventStore
+//==============================================================================
+extern "C"
+TransformerPtr new_EditEventStore (
+    void *db, 
+    const char* semicolon_separated_queries
+    )
+{
+  SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
+  return {EditEventStore, new SQLamarr::EditEventStore(*udb, 
+      tokenize(semicolon_separated_queries)
+    )};
+}
+
+//==============================================================================
 // Delete Transformer
 //==============================================================================
 extern "C"
@@ -266,6 +283,9 @@ void del_Transformer (TransformerPtr self)
     case CleanEventStore:
       delete reinterpret_cast<SQLamarr::CleanEventStore*> (self.p);
       break;
+    case EditEventStore:
+      delete reinterpret_cast<SQLamarr::EditEventStore*> (self.p);
+      break;
     default:
       throw std::bad_cast();
   }
@@ -293,6 +313,8 @@ SQLamarr::Transformer* resolve_polymorphic_transformer(TransformerPtr self)
       return reinterpret_cast<SQLamarr::TemporaryTable*> (self.p);
     case CleanEventStore:
       return reinterpret_cast<SQLamarr::CleanEventStore*> (self.p);
+    case EditEventStore:
+      return reinterpret_cast<SQLamarr::EditEventStore*> (self.p);
   }
 
   throw std::bad_cast();

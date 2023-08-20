@@ -38,6 +38,7 @@ project(SQLamarr)
       src/GenerativePlugin.cpp
       src/TemporaryTable.cpp
       src/CleanEventStore.cpp
+      src/EditEventStore.cpp
       src/version.cpp
       src/blib/LbParticleId.cpp
       src/main.cpp
@@ -63,6 +64,7 @@ project(SQLamarr)
       src/GenerativePlugin.cpp
       src/TemporaryTable.cpp
       src/CleanEventStore.cpp
+      src/EditEventStore.cpp
       src/python_bindings.cpp
       )
 
