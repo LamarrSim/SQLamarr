@@ -87,6 +87,20 @@ $$
 z' = \frac{t_x^2 z - t_x x + t_y^2 z - t_y y}{t_x^2 + t_y^2}
 $$
 
+### Slopes to Cartesian coordinates
+```sql
+slopes_to_cartesian(coord, norm, tx, ty)
+```
+Given the `norm` and the slopes `tx` and `ty` of a vector (usually a momentum)
+computes the cartesian coordinates $p_x$, $p_y$ and $p_z$ and returns the `coord`-th.
+
+As a reminder,
+$$
+t_x = \frac{p_x}{p_z} \quad;\quad 
+t_y = \frac{p_y}{p_z} \quad;\quad
+\mathrm{norm} = \sqrt{p_x^2 + p_y^2 + p_z^2}
+$$
+
 
 ## Random functions
 ### Uniform distribution

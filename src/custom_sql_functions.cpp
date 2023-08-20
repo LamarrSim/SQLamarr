@@ -54,6 +54,11 @@ void sqlamarr_create_sql_functions (sqlite3 *db)
       );
 
   sqlite3_create_function(db,
+      "slopes_to_cartesian", 4,
+      SQLITE_UTF8, NULL, &_sqlamarr_sql_slopes_to_cartesian, NULL, NULL
+      );
+
+  sqlite3_create_function(db,
       "random_uniform", 0,
       SQLITE_UTF8, NULL, &_sqlamarr_sql_random_uniform, NULL, NULL
       );
@@ -251,6 +256,49 @@ void _sqlamarr_sql_propagation_charge (
   
   else 
     sqlite3_result_null(context);
+}
+
+//==============================================================================
+// slopes_to_cartesian
+//==============================================================================
+void _sqlamarr_sql_slopes_to_cartesian (
+    sqlite3_context *context,
+    int argc,
+    sqlite3_value **argv
+    )
+{
+  int coord;
+  double norm, tx, ty;
+  double ret[3];
+
+  if (argc != 4)
+  {
+    sqlite3_result_null(context);
+    return;
+  }
+
+  coord = sqlite3_value_int(argv[0]);
+  if (coord < 0 or coord > 2)
+  {
+    sqlite3_result_error(context, "Invalid coord. Choose 012 for xyz.", -1);
+    return;
+  }
+
+  norm = sqlite3_value_double(argv[1]);
+  if (norm < 0)
+  {
+    sqlite3_result_error(context, "Negative norm", -1);
+    return;
+  }
+
+  tx = sqlite3_value_double(argv[2]);
+  ty = sqlite3_value_double(argv[3]);
+
+  ret[2] = norm/sqrt(1 + tx*tx + ty*ty);
+  ret[0] = ret[2]*tx;
+  ret[1] = ret[2]*ty;
+
+  sqlite3_result_double(context, ret[coord]);
 }
 
 

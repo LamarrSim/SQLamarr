@@ -24,4 +24,5 @@ void _sqlamarr_sql_random_uniform (sqlite3_context*, int, sqlite3_value**);
 void _sqlamarr_sql_random_normal (sqlite3_context*, int, sqlite3_value**);
 void _sqlamarr_sql_random_category (sqlite3_context*, int, sqlite3_value**);
 void _sqlamarr_sql_z_closest_to_beam (sqlite3_context*, int, sqlite3_value**);
+void _sqlamarr_sql_slopes_to_cartesian (sqlite3_context*, int, sqlite3_value**);
 
