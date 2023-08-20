@@ -164,14 +164,18 @@ namespace SQLamarr
       INSERT INTO Vertices (
         mcvertex_id, genevent_id, 
         vertex_type, 
-        x, y, z 
+        x, y, z,
+        sigma_x, sigma_y, sigma_z 
         )
       SELECT 
         mcv.mcvertex_id, mcv.genevent_id, 
         ? AS vertex_type, 
         mcv.x + rnd_ggg(?, ?, ?, ?, ?, ?), 
         mcv.y + rnd_ggg(?, ?, ?, ?, ?, ?), 
-        mcv.z + rnd_ggg(?, ?, ?, ?, ?, ?) 
+        mcv.z + rnd_ggg(?, ?, ?, ?, ?, ?),
+        ? AS sigma_x,
+        ? AS sigma_y,
+        ? AS sigma_z
       FROM MCVertices AS mcv
       WHERE mcv.is_primary == TRUE
       )");
@@ -188,6 +192,18 @@ namespace SQLamarr
       sqlite3_bind_double(reco_pv, slot_id++, m_parametrization.data[iCoord].sigma2);
       sqlite3_bind_double(reco_pv, slot_id++, m_parametrization.data[iCoord].sigma3);
     }
+
+    for (int iCoord = 0; iCoord < 3; ++iCoord)
+    {
+      float min_sigma = m_parametrization.data[iCoord].sigma1;
+      if (min_sigma < m_parametrization.data[iCoord].sigma2) 
+        min_sigma = m_parametrization.data[iCoord].sigma2;
+      if (min_sigma < m_parametrization.data[iCoord].sigma3) 
+        min_sigma = m_parametrization.data[iCoord].sigma3;
+
+      sqlite3_bind_double(reco_pv, slot_id++, min_sigma);
+    }
+
 
     exec_stmt(reco_pv);
   }

@@ -98,6 +98,9 @@ constexpr char SQL_CREATE_SCHEMA[] = R"(
           x REAL,
           y REAL,
           z REAL,
+          sigma_x REAL,
+          sigma_y REAL,
+          sigma_z REAL,
           vertex_type INTEGER,
           FOREIGN KEY(mcvertex_id) REFERENCES MCVertices(mcvertex_id),
           FOREIGN KEY(genevent_id) REFERENCES GenEvents(genevent_id)
