@@ -92,7 +92,7 @@ $$
 slopes_to_cartesian(coord, norm, tx, ty)
 ```
 Given the `norm` and the slopes `tx` and `ty` of a vector (usually a momentum)
-computes the cartesian coordinates $p_x$, $p_y$ and $p_z$ and returns the `coord`-th.
+computes the cartesian coordinates \f$p_x\f$, \f$p_y\f$ and \f$p_z\f$ and returns the `coord`-th.
 
 As a reminder,
 $$
