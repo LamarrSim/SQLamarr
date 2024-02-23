@@ -196,9 +196,9 @@ namespace SQLamarr
     for (int iCoord = 0; iCoord < 3; ++iCoord)
     {
       float min_sigma = m_parametrization.data[iCoord].sigma1;
-      if (min_sigma < m_parametrization.data[iCoord].sigma2) 
+      if (m_parametrization.data[iCoord].sigma2 < min_sigma) 
         min_sigma = m_parametrization.data[iCoord].sigma2;
-      if (min_sigma < m_parametrization.data[iCoord].sigma3) 
+      if (m_parametrization.data[iCoord].sigma3 < min_sigma) 
         min_sigma = m_parametrization.data[iCoord].sigma3;
 
       sqlite3_bind_double(reco_pv, slot_id++, min_sigma);
