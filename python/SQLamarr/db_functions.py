@@ -61,6 +61,10 @@ class SQLite3DB:
         """@private: Return the raw pointer to the algorithm."""
         clib.del_database(self._pointer)
 
+    @property
+    def path(self):
+      return self._path
+
     def get(self):
         """@private: Return the raw pointer to the database."""
         return self._pointer

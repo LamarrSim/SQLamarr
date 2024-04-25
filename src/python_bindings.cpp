@@ -23,6 +23,7 @@
 #include "SQLamarr/TemporaryTable.h"
 #include "SQLamarr/CleanEventStore.h"
 #include "SQLamarr/EditEventStore.h"
+#include "SQLamarr/UpdateDBConnection.h"
 #include "SQLamarr/SQLiteError.h"
 
 constexpr int SQL_ERRORSHIFT = 10000;
@@ -39,6 +40,7 @@ typedef enum {
     , TemporaryTable
     , CleanEventStore
     , EditEventStore
+    , UpdateDBConnection
   } TransformerType;
 
 struct TransformerPtr {
@@ -255,6 +257,19 @@ TransformerPtr new_EditEventStore (
 }
 
 //==============================================================================
+// UpdateDBConnection
+//==============================================================================
+extern "C"
+TransformerPtr new_UpdateDBConnection (
+    void *db, 
+    const char* path
+    )
+{
+  SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
+  return {UpdateDBConnection, new SQLamarr::UpdateDBConnection(*udb, path)};
+}
+
+//==============================================================================
 // Delete Transformer
 //==============================================================================
 extern "C"
@@ -285,6 +300,9 @@ void del_Transformer (TransformerPtr self)
       break;
     case EditEventStore:
       delete reinterpret_cast<SQLamarr::EditEventStore*> (self.p);
+      break;
+    case UpdateDBConnection:
+      delete reinterpret_cast<SQLamarr::UpdateDBConnection*> (self.p);
       break;
     default:
       throw std::bad_cast();

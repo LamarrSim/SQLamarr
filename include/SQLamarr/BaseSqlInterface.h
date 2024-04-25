@@ -13,7 +13,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "SQLamarr/BaseSqlInterface.h"
 #include "SQLamarr/db_functions.h"
 
 namespace SQLamarr

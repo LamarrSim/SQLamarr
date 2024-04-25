@@ -7,7 +7,7 @@ cd /mylib;
 rm -f wheelhouse/*.whl | echo "Ok";
 rm -f dist/*.whl | echo "Ok";
 
-for PYVERSION in cp311-cp311 cp310-cp310 cp37-cp37m cp38-cp38 cp39-cp39;
+for PYVERSION in cp312-cp312 cp311-cp311 cp310-cp310 cp37-cp37m cp38-cp38 cp39-cp39;
 do
   export PYBIN=/opt/python/$PYVERSION/bin/python3
   echo "Preparing binary distribution with $PYBIN";
