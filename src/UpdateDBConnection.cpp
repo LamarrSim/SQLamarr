@@ -10,12 +10,15 @@
 
 // STL
 #include <memory>
+#include <random>
 
 // SQLite3
 #include "sqlite3.h"
 
 // SQLamarr
 #include "SQLamarr/UpdateDBConnection.h"
+#include "SQLamarr/GlobalPRNG.h"
+#include "SQLamarr/db_functions.h"
 
 namespace SQLamarr
 {
@@ -37,8 +40,7 @@ namespace SQLamarr
   //============================================================================
   void UpdateDBConnection::execute()
   {
-    SQLite3DB new_database = make_database(m_filename, m_flags);
-    m_database.swap(new_database);
+    update_db_connection(m_database, m_filename, m_flags);
   }
 }
 

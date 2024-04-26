@@ -4,3 +4,7 @@
 /.idea/
 *.swp
 /docs/
+/wheelhouse/
+/dist/
+**.egg-info
+**/__pycache__/

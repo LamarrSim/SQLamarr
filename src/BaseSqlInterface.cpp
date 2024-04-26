@@ -21,6 +21,8 @@ namespace SQLamarr
   //==========================================================================
   BaseSqlInterface::BaseSqlInterface(SQLite3DB& db)
   : m_database (db)
+  , m_queries ()
+  , m_cached_raw_ptr (nullptr)
   {
     sqlamarr_create_sql_functions(db.get());
   }
@@ -30,8 +32,18 @@ namespace SQLamarr
   //==========================================================================
   BaseSqlInterface::~BaseSqlInterface()
   {
+    invalidate_cache();
+  }
+
+  //==========================================================================
+  // invalidate_cache
+  //==========================================================================
+  void BaseSqlInterface::invalidate_cache(void)
+  {
     for (auto q = m_queries.begin(); q != m_queries.end(); ++q)
       sqlite3_finalize(q->second);
+    
+    m_queries.clear();  // Cache invalidation
   }
 
   //==========================================================================
@@ -42,6 +54,12 @@ namespace SQLamarr
       const std::string& query
       )
   {
+    if (m_database.get() != m_cached_raw_ptr)
+    {
+      m_cached_raw_ptr = m_database.get();
+      invalidate_cache();
+    }
+
     if (m_queries.find(name) == m_queries.end())
       m_queries[name] = prepare_statement(m_database, query);
 

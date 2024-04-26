@@ -54,12 +54,8 @@ class HepMC2DataLoader:
   """
   def __init__(self, db: SQLite3DB):
     """Acquires the reference to an open connection to the DB"""
-    self._self = clib.new_HepMC2DataLoader(db.get())
+    self._db = db
   
-  def __del__ (self):
-    """@private: Release the bound class instance"""
-    clib.del_HepMC2DataLoader(self._self)
-
   def load(self, filename: str, runNumber: int, evtNumber: int):
     """Loads an ASCII file with
     [HepMC3::ReaderAsciiHepMC2](http://hepmc.web.cern.ch/hepmc/classHepMC3_1_1ReaderAsciiHepMC2.html).
@@ -67,6 +63,8 @@ class HepMC2DataLoader:
     if not os.path.exists(filename):
       raise FileNotFoundError(filename)
 
+    _self = clib.new_HepMC2DataLoader(self._db.get())
     clib.HepMC2DataLoader_load(
-        self._self, filename.encode('ascii'), runNumber, evtNumber
+        _self, filename.encode('ascii'), runNumber, evtNumber, self._db.path.encode('ascii')
         )
+    clib.del_HepMC2DataLoader(_self)

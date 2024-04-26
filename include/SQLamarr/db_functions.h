@@ -36,6 +36,13 @@ namespace SQLamarr
 
   /// Ensure a token is alphanumeric
   void validate_token(const std::string& token);
+
+  /// Force synchronization to disk by closing and opening the connection
+  void update_db_connection(
+      SQLite3DB& old_db, 
+      const std::string& db_uri, 
+      int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_URI
+      );
 }
 
 

@@ -17,6 +17,7 @@
 #include "SQLamarr/db_functions.h"
 #include "SQLamarr/GlobalPRNG.h"
 #include "SQLamarr/SQLiteError.h"
+#include "SQLamarr/custom_sql_functions.h"
 #include "schema.sql"
 
 namespace SQLamarr
@@ -110,9 +111,14 @@ namespace SQLamarr
         db,
         [](sqlite3* ptr) {
         SQLamarr::GlobalPRNG::release(ptr);
-        sqlite3_close(ptr);
+        int ret = sqlite3_close(ptr);
+        if (ret != SQLITE_OK)
+        {
+          std::cerr << "sqlite3_close returned errorcode: " << ret << std::endl;
+          throw (SQLiteError("Failed closing the connection"));
         }
-        );
+      }
+      );
   }
 
   //==========================================================================
@@ -235,6 +241,29 @@ namespace SQLamarr
         << std::endl;
       throw std::runtime_error("Invalid token");
     }
+  }
+
+  
+  //==========================================================================
+  // update_db_connection
+  //==========================================================================
+  void update_db_connection(SQLite3DB& old_db, const std::string& db_uri, int flags)
+  {
+    // Create the new connection to the database
+    SQLite3DB new_database = make_database(db_uri, flags);
+
+    // Generate a seed for the new database, using the chain of random numbers
+    // of the previous one.
+    auto old_generator = GlobalPRNG::get_or_create(old_db.get());
+    std::uniform_int_distribution<long> distribution(0, 0xFFFFFFFFL);
+    uint64_t new_seed = distribution(*old_generator);
+    GlobalPRNG::get_or_create(new_database.get(), new_seed);
+
+    // Define the SQLamarr-custom SQLite functions for the new connection
+    sqlamarr_create_sql_functions(new_database.get());
+
+    // Replace the old db connection with the new one, and then destroy it
+    old_db.swap(new_database);
   }
 
 }

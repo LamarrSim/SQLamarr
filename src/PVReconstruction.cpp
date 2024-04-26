@@ -63,9 +63,7 @@ namespace SQLamarr
       )
     : BaseSqlInterface(db)
     , m_parametrization (parametrization)
-  {
-    using_sql_function( "rnd_ggg", 6, &_sql_rnd_ggg );
-  }
+  {}
 
   //============================================================================
   // SQLite3 extension: rnd_ggg
@@ -160,6 +158,8 @@ namespace SQLamarr
   //============================================================================
   void PVReconstruction::execute ()
   {
+    using_sql_function( "rnd_ggg", 6, &_sql_rnd_ggg );
+
     sqlite3_stmt* reco_pv = get_statement("reco_pv", R"(
       INSERT INTO Vertices (
         mcvertex_id, genevent_id, 
