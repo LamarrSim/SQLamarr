@@ -7,6 +7,7 @@ older Linux distributions.
 Indeed, PyPI forbids uploading wheel that do not specify a compatibility tag
 used to choose the right wheel when running `pip install SQLamarr`.
 
+## Using docker 
 To compile the wheel in compatibility mode, we are using the following recipe,
 which assumes the working directory is the root of the git repository
 ```bash
@@ -15,7 +16,22 @@ docker run -it -v $PWD:/mylib quay.io/pypa/manylinux2014_x86_64:latest \
 python3 -m twine upload wheelhouse/*.whl
 ```
 
-Additional information:
+## Using Apptainer
+In some environments, docker is not available and apptainer should be used instead.
+
+First convert the docker image to an SIF image (this is only required once). 
+```bash
+apptainer build /tmp/pypa.sif docker://quay.io/pypa/manylinux2014_x86_64:latest
+```
+
+Then execute the following script (as for the docker case, it is assumed 
+the working directory is the root of the git repository).
+
+```build
+apptainer exec --bind $PWD:/mylib --writable-tmpfs /tmp/pypa.sif /bin/bash make_wheel.sh
+```
+
+## Additional information:
  * Distributing binaries in compatibility mode: https://github.com/pypa/manylinux
  * Example using travis for CI/CD: https://github.com/pypa/python-manylinux-demo
 

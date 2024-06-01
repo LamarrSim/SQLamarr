@@ -23,6 +23,7 @@
 #include "SQLamarr/TemporaryTable.h"
 #include "SQLamarr/CleanEventStore.h"
 #include "SQLamarr/EditEventStore.h"
+#include "SQLamarr/UpdateDBConnection.h"
 #include "SQLamarr/SQLiteError.h"
 
 constexpr int SQL_ERRORSHIFT = 10000;
@@ -39,6 +40,7 @@ typedef enum {
     , TemporaryTable
     , CleanEventStore
     , EditEventStore
+    , UpdateDBConnection
   } TransformerType;
 
 struct TransformerPtr {
@@ -47,6 +49,7 @@ struct TransformerPtr {
 };
 
 SQLamarr::Transformer* resolve_polymorphic_transformer(TransformerPtr);
+void clear_cache_if_any(TransformerPtr);
 std::vector<std::string> tokenize (const char*);
 
 //==============================================================================
@@ -101,11 +104,15 @@ void HepMC2DataLoader_load (
       void *self, 
       const char* file_path, 
       size_t runNumber, 
-      size_t evtNumber
+      size_t evtNumber,
+      const char *db_uri
     )
 {
-  reinterpret_cast<SQLamarr::HepMC2DataLoader *>(self)
-    ->load(file_path, runNumber, evtNumber);
+  auto loader = reinterpret_cast<SQLamarr::HepMC2DataLoader *>(self);
+  loader->sync_database(db_uri);
+  loader->load(file_path, runNumber, evtNumber);
+  loader->invalidate_cache();
+  loader->sync_database(db_uri);
 }
 
 
@@ -255,6 +262,19 @@ TransformerPtr new_EditEventStore (
 }
 
 //==============================================================================
+// UpdateDBConnection
+//==============================================================================
+extern "C"
+TransformerPtr new_UpdateDBConnection (
+    void *db, 
+    const char* path
+    )
+{
+  SQLite3DB *udb = reinterpret_cast<SQLite3DB *>(db);
+  return {UpdateDBConnection, new SQLamarr::UpdateDBConnection(*udb, path)};
+}
+
+//==============================================================================
 // Delete Transformer
 //==============================================================================
 extern "C"
@@ -286,6 +306,9 @@ void del_Transformer (TransformerPtr self)
     case EditEventStore:
       delete reinterpret_cast<SQLamarr::EditEventStore*> (self.p);
       break;
+    case UpdateDBConnection:
+      delete reinterpret_cast<SQLamarr::UpdateDBConnection*> (self.p);
+      break;
     default:
       throw std::bad_cast();
   }
@@ -315,9 +338,47 @@ SQLamarr::Transformer* resolve_polymorphic_transformer(TransformerPtr self)
       return reinterpret_cast<SQLamarr::CleanEventStore*> (self.p);
     case EditEventStore:
       return reinterpret_cast<SQLamarr::EditEventStore*> (self.p);
+    case UpdateDBConnection:
+      return reinterpret_cast<SQLamarr::UpdateDBConnection*> (self.p);
   }
 
   throw std::bad_cast();
+}
+
+//==============================================================================
+// clear_cache_if_any
+//==============================================================================
+void clear_cache_if_any(TransformerPtr self)
+{
+  switch (self.dtype)
+  {
+    case PVFinder:
+      reinterpret_cast<SQLamarr::PVFinder*> (self.p)->invalidate_cache();
+      break;
+    case MCParticleSelector:
+      reinterpret_cast<SQLamarr::MCParticleSelector*> (self.p)->invalidate_cache();
+      break;
+    case PVReconstruction:
+      reinterpret_cast<SQLamarr::PVReconstruction*> (self.p)->invalidate_cache();
+      break;
+    case Plugin:
+      reinterpret_cast<SQLamarr::Plugin*> (self.p)->invalidate_cache();
+      break;
+    case GenerativePlugin:
+      reinterpret_cast<SQLamarr::GenerativePlugin*> (self.p)->invalidate_cache();
+      break;
+    case TemporaryTable:
+      reinterpret_cast<SQLamarr::TemporaryTable*> (self.p)->invalidate_cache();
+      break;
+    case CleanEventStore:
+      reinterpret_cast<SQLamarr::CleanEventStore*> (self.p)->invalidate_cache();
+      break;
+    case EditEventStore:
+      reinterpret_cast<SQLamarr::EditEventStore*> (self.p)->invalidate_cache();
+      break;
+    case UpdateDBConnection:
+      break;
+  }
 }
 
 //==============================================================================
@@ -334,6 +395,7 @@ int execute_pipeline(int algc, TransformerPtr* algv)
     try
     {
       t->execute();
+      clear_cache_if_any(algv[iAlg]);
     }
     catch (const SQLamarr::SQLiteError& e)
     {

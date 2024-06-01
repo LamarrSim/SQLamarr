@@ -13,7 +13,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "SQLamarr/BaseSqlInterface.h"
 #include "SQLamarr/db_functions.h"
 
 namespace SQLamarr
@@ -39,12 +38,21 @@ namespace SQLamarr
       BaseSqlInterface(SQLite3DB& db);
       virtual ~BaseSqlInterface();
 
+      void sync_database(const std::string& db_uri)
+      {update_db_connection(m_database, db_uri);}
+
+      /// Invalidate the cache of the queries. 
+      /// Especially useful to allow refreshing the connection when running 
+      /// from Python.
+      void invalidate_cache(void);
+
     protected: // members
       SQLite3DB& m_database; ///< Reference to the SQLite database (not owned).
 
 
     private: //members
       std::unordered_map<std::string, sqlite3_stmt*> m_queries;
+      sqlite3* m_cached_raw_ptr;
 
     protected: // methods
       /// Creates or retrieve from cache a statement
@@ -60,7 +68,7 @@ namespace SQLamarr
       void begin_transaction () { sqlite3_exec(m_database.get(), "BEGIN", 0, 0, 0); }
 
       /// End an SQL transaction re-enabling disk updates
-      void end_transaction () { sqlite3_exec(m_database.get(), "END", 0, 0, 0); }
+      void end_transaction () { sqlite3_exec(m_database.get(), "COMMIT", 0, 0, 0); }
 
       /// Return the index of the last rows inserted in any table
       int last_insert_row () { return sqlite3_last_insert_rowid(m_database.get()); }
