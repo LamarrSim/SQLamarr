@@ -7,6 +7,8 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
+// Standard C
+#include <math.h>
 
 // STL
 #include <iostream>
@@ -195,15 +197,15 @@ namespace SQLamarr
 
     for (int iCoord = 0; iCoord < 3; ++iCoord)
     {
-      float min_sigma = m_parametrization.data[iCoord].sigma1;
-      if (m_parametrization.data[iCoord].sigma2 < min_sigma) 
-        min_sigma = m_parametrization.data[iCoord].sigma2;
-      if (m_parametrization.data[iCoord].sigma3 < min_sigma) 
-        min_sigma = m_parametrization.data[iCoord].sigma3;
+      const SmearingParametrization_1D& param = m_parametrization.data[iCoord];
 
-      sqlite3_bind_double(reco_pv, slot_id++, min_sigma);
+      float sigma = sqrt(
+        param.f1 * param.sigma1 * param.sigma1 +
+        param.f2 * param.sigma2 * param.sigma2 +
+        (1 - param.f1 - param.f2) * param.sigma3 * param.sigma3
+      );
+      sqlite3_bind_double(reco_pv, slot_id++, sigma);
     }
-
 
     exec_stmt(reco_pv);
   }
