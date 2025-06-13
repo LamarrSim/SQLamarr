@@ -16,7 +16,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: aiinfn-runner
     steps:
       - name: "Checkout package"
         uses: actions/checkout@v3
