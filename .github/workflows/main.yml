@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: "Checkout package"
         uses: actions/checkout@v4
+        with:
+          show-progress: false
+          sparse-checkout: false
       - run: sudo apt-get update
       - run: sudo apt-get install -y doxygen graphviz
       - run: doxygen
